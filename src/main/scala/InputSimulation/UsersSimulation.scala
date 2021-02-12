@@ -38,7 +38,7 @@ object UsersSimulation extends Simulation[Seq[String]]{
   }
 
   //source dovrà ridare un csv reader
-  override def start(source : DataSource[Seq[String]] ): Unit = {
+  override def start(source : DataSource[Seq[String]]): Unit = {
 
 
     val producer: Producer[String, String] = new KafkaProducer(props)
@@ -46,7 +46,7 @@ object UsersSimulation extends Simulation[Seq[String]]{
     //val reader = CSVReader.open(new File("C:\\Users\\Alex\\Desktop\\Fraud_Historical_data\\historical_data.csv"))
     //reader.foreach()
     source.getDataStream().foreach(transaction => {
-      producer.send(new ProducerRecord[String,String]("input-topic", transaction.mkString(",")))
+      producer.send(new ProducerRecord[String,String]("input-topic", transaction.mkString(source.dataSeparator)))
       Thread.sleep(waitingTime)
       //println("prova",transaction.getClass.getDeclaredFields.map(_.getName).
       //classOf[Transaction].getDeclaredFields.map{ f => f.setAccessible(true) val res = (f.getName, f.get(u)) f.setAccessible(false) res }
