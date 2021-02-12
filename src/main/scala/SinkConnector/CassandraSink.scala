@@ -31,10 +31,6 @@ class SinkConnctor extends ForeachWriter[Transaction]{
            values('${value}')""")
       )
 
-    /*var cassandraDriver = CassandraDriver
-  if (cassandraDriver == null) {
-  cassandraDriver = new CassandraDriver();
-  }*/
 
   }
 

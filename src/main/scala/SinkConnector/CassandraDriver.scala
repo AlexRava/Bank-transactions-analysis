@@ -18,9 +18,9 @@ object CassandraDriver extends Driver[CassandraConnector]{
   private var conn: Option[CassandraConnector] = Option.empty
 
   //deve essere sempre reinstanziato o può essere riuato ?  se puo essere riusato uso il metodo qui sotto, altrimenti uso val connector = CassandraConnector(App.spark.sparkContext.getConf)
-  //  spostare questa implentazione in driver ? 
-  override def connector():CassandraConnector = conn.get match {
-    case Option.empty => {
+  //  spostare questa implentazione in driver ?
+  override def connector():CassandraConnector = conn match {
+    case None => {
       conn = Option(CassandraConnector(App.spark.sparkContext.getConf))
       conn.get
     }
