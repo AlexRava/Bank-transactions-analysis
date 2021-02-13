@@ -45,6 +45,8 @@ object UsersSimulation extends Simulation[Seq[String]]{
 
     //val reader = CSVReader.open(new File("C:\\Users\\Alex\\Desktop\\Fraud_Historical_data\\historical_data.csv"))
     //reader.foreach()
+
+    //HO IL DUBBIO CHE LA VIRGOLA CHE METTO QUI L HO DECISA IO E NON è DEL CSV!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     source.getDataStream().foreach(transaction => {
       producer.send(new ProducerRecord[String,String]("input-topic", transaction.mkString(source.dataSeparator)))
       Thread.sleep(waitingTime)
