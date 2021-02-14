@@ -104,8 +104,13 @@ object App extends App {
 
   val feature2 = userTransactions
 
-  
+  val featureN = userTransactions
 
+  //CI SARà UN PUNTO DI JOIN TRA IL RISULTATI DI FEATURE1, FEATURE2, FEATUREn E CON IL FLUSSO DI DATI in arrivo dall'utente ( per avere tutti i valori)
+  //  forse il join è prima considerato che alcuni valori della transazione servono per calcolar le feature
+  // il join della transazione in arrivo potrebbe essere con user transactions ( prima della divisione dei diversi stream)
+  // join o semplice invio nello stesso topic ?? come sitringuo la transazione targe dalle altre transazioni ? time stamp? è la trans.
+  //con time stamp più recente altrimenti..
 
 
 
