@@ -1,21 +1,39 @@
 package SinkConnector
 
 import App._
-
+import com.datastax.oss.driver.api.core.CqlSession
+import com.datastax.oss.driver.api.core.cql.ResultSet
+import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspaceStart
 import com.datastax.spark.connector.cql.CassandraConnector
+import com.datastax.oss.driver.api.querybuilder.SchemaBuilder._;
 
-trait Driver[T] {
+
+trait DbDriver[T] {
+/*
+  def newKeyspace(keyspaceName:String, replicationFactor: Int)
+  def removeKeySpace(keyspaceName:String)
+
+  def newTable(tableName:String)
+  def removeTable(tableName:String)*/
 
   def connector():T
 
-  def keySpace:String
-  def table:String
+  /*def keySpace:String
+  def table:String*/
 
 }
 
-object CassandraDriver extends Driver[CassandraConnector]{
+object CassandraDriver extends DbDriver[CassandraConnector]{
 
   private var conn: Option[CassandraConnector] = Option.empty
+
+  /*override def newKeyspace(keySpaceName: String, replicationFactor: Int) = createKeyspace(keySpaceName).ifNotExists().withSimpleStrategy(replicationFactor)
+
+  override def removeKeySpace(keySpaceName: String) = dropKeyspace(keySpaceName).ifExists()
+
+  override def newTable(newTableQuery: String) = CqlSession.builder().build().execute(newTableQuery)
+
+  override def removeTable(tableName: String) = dropTable(tableName).ifExists()*/
 
   //deve essere sempre reinstanziato o può essere riuato ?  se puo essere riusato uso il metodo qui sotto, altrimenti uso val connector = CassandraConnector(App.spark.sparkContext.getConf)
   //  spostare questa implentazione in driver ?
@@ -28,8 +46,8 @@ object CassandraDriver extends Driver[CassandraConnector]{
   }
   //val connector = CassandraConnector(App.spark.sparkContext.getConf)
 
-  val  keySpace = "tutorial"
-  val table = "table3"
+  val  keySpace = "bank"
+  val table = "transactions1"
 
 
   //val StreamProviderTableSink = "radioothersink"

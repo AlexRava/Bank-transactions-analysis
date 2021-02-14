@@ -8,11 +8,11 @@ import org.apache.spark.sql.ForeachWriter
 provare a sostiruti T con Transaction ( anche nel metodo process ) probabilmente non funziona
 mettere ForeachWriter[Row] potrebbe essere che se poi voglio usare Transaction, Transaction deve estendere Row..
  */
-class SinkConnctor extends ForeachWriter[Transaction]{
+class CassandraSink extends ForeachWriter[Transaction]{
 
   override def open(partitionId: Long, epochId: Long): Boolean = true
 
-  override def process(value: Transaction): Unit = {
+  override def process(t: Transaction): Unit = {
     //import spark.implicits._
 
     //test di una query vuota
@@ -23,17 +23,23 @@ class SinkConnctor extends ForeachWriter[Transaction]{
     //session.execute(""select * from" ${CassandraDriver.namespace}.${CassandraDriver.table}";")
     //)
 
+    val cols = "DeviceOS, Browser, DeviceType, ScreenResolution , DeviceInfo , uid , TransactionAmt , ProductCD , isFraud , card1 , card2 , card3 , card4 , card5 , card6 , region , country , R_emaildomain , P_emaildomain , TransactionDT , TransactionID ,D1"
     // cassandra insert data OK
-    val driver: Driver[CassandraConnector] = CassandraDriver
+    val driver: DbDriver[CassandraConnector] = CassandraDriver
 
-    driver.connector.withSessionDo(session => session.execute
-      (s""" insert into ${CassandraDriver.keySpace}.${CassandraDriver.table} (uid)
-           values('${value}')""")
-      )
+    val query: String = s""" insert into ${CassandraDriver.keySpace}.${CassandraDriver.table} (${cols}) values('${t.DeviceOS}','${t.Browser}','${t.DeviceType}','${t.ScreenResolution}','${t.DeviceInfo}','${t.uid}',${t.TransactionAmt},'${t.ProductCD}',${t.isFraud},'${t.card1}','${t.card2}','${t.card3}','${t.card4}','${t.card5}','${t.card6}','${t.region}','${t.country}','${t.R_emaildomain}','${t.P_emaildomain}','${t.TransactionDT}','${t.TransactionID}','${t.D1}');"""
 
+    //println(query)
+    driver.connector.withSessionDo(session => session.execute(query))
 
   }
 
   override def close(errorOrNull: Throwable): Unit = {}
+
+  /*
+  object SinkCassandraHelper{
+
+    getCreateTableSchema() = {}
+  }*/
 
 }
