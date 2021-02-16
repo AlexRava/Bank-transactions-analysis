@@ -7,7 +7,7 @@ import org.apache.spark.sql.functions.{col, from_json, window}
 import org.apache.spark.sql.functions._
 
 
-object allTransactions extends StreamingFlow{
+object AllTransactions extends StreamingFlow{
 
   //val transformer :
   import spark.implicits._

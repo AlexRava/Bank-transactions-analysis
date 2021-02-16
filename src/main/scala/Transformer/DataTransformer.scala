@@ -3,17 +3,16 @@ package Transformer
 import App.App.spark
 import Data.DataObject.Transaction
 import Streams.StreamingFlow
+import org.apache.spark.sql.DataFrame
 
 import scala.collection.mutable
 
 trait Transformer{
   def addSource(dataSource: StreamingFlow)
-  def compute()
-
-
+  def compute():DataFrame
 }
 
-class DataTransformer()/*var dataSource: StreamingFlow)*/ extends Transformer {
+class DataTransformer() extends Transformer {
 
   import spark.implicits._
 
@@ -30,7 +29,8 @@ class DataTransformer()/*var dataSource: StreamingFlow)*/ extends Transformer {
 
   override def compute( ) = {
     mergeStream()
-      //.starrt
+      .select($"uid")
+
 
 
   }
