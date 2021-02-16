@@ -1,13 +1,14 @@
 package App
 
 import Data.DataObject.{Transaction, TransactionFactory}
+import Streams.{AllUsersTransactions, InputStream}
 import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
 import org.apache.spark.sql.cassandra._
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.expressions.Window
-import org.apache.spark.sql.{DataFrame, SparkSession}
-import org.apache.spark.sql.streaming.OutputMode
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode}
 import org.apache.spark.sql.functions._
 
 object App extends App {
@@ -28,7 +29,8 @@ object App extends App {
 
   import spark.implicits._
 
-  val transaction = spark
+  val transaction = InputStream.transaction
+  /*val transaction = spark
     .readStream
     .format("kafka")
     .option("kafka.bootstrap.servers", "localhost:9092")
@@ -38,11 +40,7 @@ object App extends App {
     .as[(String,String)]
     .map(_._2.split(",").toList)
     //.map(_.asInstanceOf[TransactionSerialized]) //non funziona perche lo split da in output una lista e non una tupla
-    .map(Transaction(_))
-  //.map(_.uid)
-  //.filter(t => (t.TransactionID != "") & (t.uid != ""))
-  //.map(_.uid)
-    //.toDF()
+    .map(Transaction(_))*/
 
   //stream that publish the transactions on the topic where will be computed the feature engineering phase
   /*val loadTransaction = transaction
@@ -55,31 +53,10 @@ object App extends App {
     .option("topic", "allTransactions")
     .save()*/
 
-
+  val allUsersTransactions : DataStreamWriter[Row] = AllUsersTransactions(transaction)
+  allUsersTransactions.start()
   //per ogni transactions si devono mettere in un topic kafka le relative transazioni storiche dell'utente
-  val retrieveAllUserTransactions = transaction
-    .select($"uid")
-    .writeStream
-    .outputMode(OutputMode.Update)
-    .foreachBatch( (batchDF: DataFrame, batchId:Long) => {
-      batchDF.collect.foreach(user => spark
-        .read
-        .cassandraFormat("transactions1","bank")
-        .load()
-        .filter("uid = '" + user.mkString + "'")// 'where' is computed on Cassandra Server, not in spark ( ?? )
-        .select($"uid" as "key" , to_json(struct($"*")) as "value")
 
-        //.show()
-        //.toDF("key", "value")
-        .write
-        .format("kafka")
-        .option("kafka.bootstrap.servers", "localhost:9092")
-        .option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
-        .option("topic", "allTransactions") // HOW TO PARTITION (?)
-        .save()
-      )
-    })
-    .start()
   //retrieveAllUserTransactions.awaitTermination()
 
 
@@ -122,10 +99,8 @@ object App extends App {
   //numero di transazioni nell'ultimo mese minori di range1
   val range1: Double = 80
   val numberofTransactionsLastPeriod = userTransactions
-      .groupBy("uid").agg
-    .groupBy(window(col("data.transactiondt"),"1 week",))
-    .agg(sum("data.transactionamt"))
-    //.agg(avg("Close").as("weekly_average"))
+    //.groupBy(window(col("data.transactiondt"),"1 week",))
+    //.agg(sum("data.transactionamt"))
 
   //ok funzionava bene se fosse stato ok
   //.withColumn("newcol", sum(col("data.transactionamt")).over(weekWindow)).orderBy(asc("data.transactiondt"))
