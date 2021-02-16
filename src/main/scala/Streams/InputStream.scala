@@ -23,7 +23,23 @@ object InputStream extends StreamingFlow {
   //.filter(t => (t.TransactionID != "") & (t.uid != ""))
   //.map(_.uid)
   //.toDF()
+
   def transactions = transaction
+
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  //stream that publish the transactions on the topic where will be computed the feature engineering phase
+  /*val loadTransaction = transaction
+    .select($"uid", to_json(struct($"*")))
+    .toDF("key", "value")
+    .write
+    .format("kafka")
+    .option("kafka.bootstrap.servers", "localhost:9092")
+    .option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
+    .option("topic", "allTransactions")
+    .save()*/
+
+  //send all transactions to the feature eng topic
+
 
   override def start(): Unit = ???
 
