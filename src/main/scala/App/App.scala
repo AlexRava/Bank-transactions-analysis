@@ -1,13 +1,14 @@
 package App
 
 import Data.DataObject.{Transaction, TransactionFactory}
-import org.apache.spark.sql.functions.{struct, to_json, from_json, col}
+import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
 import org.apache.spark.sql.cassandra._
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
+import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.streaming.OutputMode
-
+import org.apache.spark.sql.functions._
 
 object App extends App {
 
@@ -81,6 +82,7 @@ object App extends App {
     .start()
   //retrieveAllUserTransactions.awaitTermination()
 
+
   //leggo lo stream che contiene tutte le transazioni di un utente, input da stream di dati in ingresso al sisteam + db
   val userTransactions = spark
     .readStream
@@ -89,18 +91,57 @@ object App extends App {
     .option("subscribe", "allTransactions")
     .load()
     .select( $"key" cast "string" as "uid", $"value" cast "string" as "json")
-    .select($"uid",from_json($"json",Transaction.schema) as "data")
+    //.select($"uid" , $"json".as[Transaction])
+
+  .select($"uid",from_json($"json",Transaction.schema) as "data")
+
+  //.select($"data").as[Transaction]
+    //.map(row => (row.fieldIndex("uid"),Transaction(row.toString.split(",").toList))) // non so se è proprio quello che voglio
+
+
 
   //prendo tutte le transazioni di un utente e ne calcolo le nuove feature, mi sa che è opportuno fare un merge con le transazioni in ingresso
   //POSSO DECIDERE COME ELIMINARE I VALORI VECCHI PERCHE ALTRIMENTI RIMANGONO SEMPRE TUTTI
 
+    def myWindow(n: Int) ={
+      def days(n:Int) = 60*60*24*n
 
-  val feature1 = userTransactions
+        window(col("data.transactiondt"),"1 week")
+        //.agg(avg("Close").as("weekly_average"))
+
+      //windows not supported, peccato, sarebbero state perfette
+      /*Window
+        .partitionBy($"uid")
+        .orderBy(col("data.transactiondt").cast("timestamp"))//.cast("long"))
+        .rangeBetween(-days(n), Window.currentRow)*/
+    }
+
+  def weekWindow = myWindow(7)
+  def monthWindow =  myWindow(30)
+
+  //numero di transazioni nell'ultimo mese minori di range1
+  val range1: Double = 80
+  val numberofTransactionsLastPeriod = userTransactions
+      .groupBy("uid").agg
+    .groupBy(window(col("data.transactiondt"),"1 week",))
+    .agg(sum("data.transactionamt"))
+    //.agg(avg("Close").as("weekly_average"))
+
+  //ok funzionava bene se fosse stato ok
+  //.withColumn("newcol", sum(col("data.transactionamt")).over(weekWindow)).orderBy(asc("data.transactiondt"))
+
+
+  val printUid = numberofTransactionsLastPeriod//userTransactions
+        .writeStream
+        .outputMode("update")
+        .format("console")
+        .start()
+
 
     // mi sa che prima faccio tutte le selezioni di dati e manipolazioni e poi alla fine faccio il group by con l'operazione di aggrgazione tipo: count
-    .groupBy($"uid")
-    .count
-    .map(_)
+    //.groupBy($"uid")
+    //.count
+    //.map(_)*/
 
   val feature2 = userTransactions
 
@@ -114,6 +155,7 @@ object App extends App {
 
 
 
+  spark.streams.awaitAnyTermination()
 
   //WRITE in Cassandra DB
   /*val writeQueryCassandra = transactions
