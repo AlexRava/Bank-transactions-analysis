@@ -3,12 +3,16 @@ package Streams
 import App.App.spark
 import Data.DataObject.Transaction
 import org.apache.spark.sql.Dataset
+import Data.DataObject
 
 object InputStream extends StreamingFlow {
 
   import spark.implicits._
 
-  val transaction: Dataset[Transaction] = spark
+
+  //override def readStream = transaction
+
+  override def readStream /*Dataset[Transaction]*/ = spark
     .readStream
     .format("kafka")
     .option("kafka.bootstrap.servers", "localhost:9092")
@@ -19,12 +23,14 @@ object InputStream extends StreamingFlow {
     .map(_._2.split(",").toList)
     //.map(_.asInstanceOf[TransactionSerialized]) //non funziona perche lo split da in output una lista e non una tupla
     .map(Transaction(_))
+    .select($"*")
+
   //.map(_.uid)
   //.filter(t => (t.TransactionID != "") & (t.uid != ""))
   //.map(_.uid)
   //.toDF()
 
-  def transactions = transaction
+  //def transactions = transaction
 
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //stream that publish the transactions on the topic where will be computed the feature engineering phase
@@ -44,4 +50,5 @@ object InputStream extends StreamingFlow {
   override def start(): Unit = ???
 
   override def conf(): Unit = ???
+
 }

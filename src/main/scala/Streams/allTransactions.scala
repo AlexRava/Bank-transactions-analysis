@@ -2,17 +2,17 @@ package Streams
 
 import App.App.spark
 import Data.DataObject.Transaction
+import Transformer.DataTransformer
 import org.apache.spark.sql.functions.{col, from_json, window}
 import org.apache.spark.sql.functions._
 
 
 object allTransactions extends StreamingFlow{
 
-  val transformer : DataTransformer = new DataTransformer()
-
+  //val transformer :
   import spark.implicits._
 
-  val read =  spark
+  override def readStream =  spark
     .readStream
     .format("kafka")
     .option("kafka.bootstrap.servers", "localhost:9092")
@@ -23,9 +23,6 @@ object allTransactions extends StreamingFlow{
     .select($"uid",from_json($"json",Transaction.schema) as "data")
     //.select($"data").as[Transaction]
     //.map(row => (row.fieldIndex("uid"),Transaction(row.toString.split(",").toList))) // non so se è proprio quello che voglio
-
-
-  val write = TransformData().publishDataTransformed
 
   /*
     //CI SARà UN PUNTO DI JOIN TRA IL RISULTATI DI FEATURE1, FEATURE2, FEATUREn E CON IL FLUSSO DI DATI in arrivo dall'utente ( per avere tutti i valori)

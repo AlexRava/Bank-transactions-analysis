@@ -1,7 +1,7 @@
 package App
 
 import Data.DataObject.{Transaction, TransactionFactory}
-import Streams.{AllUsersTransactions, InputStream, allTransactions, StreamUtility}
+import Streams.{AllUsersTransactions, InputStream, StreamUtility, StreamingFlow, allTransactions}
 import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
 import org.apache.spark.sql.cassandra._
 import org.apache.log4j.{Level, Logger}
@@ -12,12 +12,13 @@ import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode}
 import org.apache.spark.sql.functions._
 
 object App extends App {
+  def printStream(stream: StreamingFlow) = StreamUtility.printInStdOut(stream.readStream)
 
   Logger.getLogger("org").setLevel(Level.ERROR)
   Logger.getLogger("akka").setLevel(Level.ERROR)
 
   val conf: SparkConf = new SparkConf()
-    .setAppName("structured-streaming-kafka-hello-world")
+    .setAppName("Bank-transactions-analysis")
     .setMaster("local[*]")
     .set("spark.cassandra.connection.host", "localhost")
     .set("spark.sql.streaming.checkpointLocation", "checkpoint")
@@ -29,12 +30,13 @@ object App extends App {
 
   //import spark.implicits._
 
-  val transaction = InputStream.transaction
+  val transaction = InputStream.readStream//transaction
 
   AllUsersTransactions.allUserTransactions(transaction).start()
-
-  StreamUtility.printInStdOut(allTransactions.read)
+  
+  printStream(allTransactions)
 
   spark.streams.awaitAnyTermination()
 }
+
 

@@ -11,7 +11,7 @@ object AllUsersTransactions extends StreamingFlow {
 
   import spark.implicits._
 
-  def allUserTransactions(userTransaction : Dataset[Transaction]) =
+  def allUserTransactions(userTransaction : DataFrame) =
     userTransaction
     .select($"uid")
     .writeStream
@@ -34,9 +34,12 @@ object AllUsersTransactions extends StreamingFlow {
         .save()
       )
     })
+  override def readStream(): DataFrame = ???
+
 
 
   override def start(): Unit = ???
 
   override def conf(): Unit = ???
+
 }
