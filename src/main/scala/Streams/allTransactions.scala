@@ -8,6 +8,8 @@ import org.apache.spark.sql.functions._
 
 object allTransactions extends StreamingFlow{
 
+  val transformer : DataTransformer = new DataTransformer()
+
   import spark.implicits._
 
   val read =  spark
@@ -23,7 +25,7 @@ object allTransactions extends StreamingFlow{
     //.map(row => (row.fieldIndex("uid"),Transaction(row.toString.split(",").toList))) // non so se è proprio quello che voglio
 
 
-  //val write = manipolazione, in realtà prendo input da csv
+  val write = TransformData().publishDataTransformed
 
   /*
     //CI SARà UN PUNTO DI JOIN TRA IL RISULTATI DI FEATURE1, FEATURE2, FEATUREn E CON IL FLUSSO DI DATI in arrivo dall'utente ( per avere tutti i valori)
