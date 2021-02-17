@@ -1,6 +1,7 @@
 package SinkConnector
 
 import App._
+import Utility.LoadTableInCassandra
 import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.cql.ResultSet
 import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspaceStart
@@ -37,14 +38,17 @@ object CassandraDriver extends DbDriver[CassandraConnector]{
 
   //deve essere sempre reinstanziato o può essere riuato ?  se puo essere riusato uso il metodo qui sotto, altrimenti uso val connector = CassandraConnector(App.spark.sparkContext.getConf)
   //  spostare questa implentazione in driver ?
-  override def connector():CassandraConnector = conn match {
+
+  //BUONO MA NON FUNZIONAAAAAA, PROBLEMA DA DOVE LO CHIAMO App.spark.ecc se sono i load table devo fare riferimento a quel spark..
+  /*override def connector():CassandraConnector = conn match {
     case None => {
       conn = Option(CassandraConnector(App.spark.sparkContext.getConf))
       conn.get
     }
     case _ => conn.get
-  }
-  //val connector = CassandraConnector(App.spark.sparkContext.getConf)
+  }*/
+  //valido solo se faccio da load table in cassandra
+  val connector = CassandraConnector(LoadTableInCassandra.spark.sparkContext.getConf)
 
   val  keySpace = "bank"
   val table = "transactions1"

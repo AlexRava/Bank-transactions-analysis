@@ -58,18 +58,24 @@ object LoadTableInCassandra extends App{
     .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
     .as[(String,String)]
     .map(_._2.split(",").toList)
-    //.map(TransactionFactory.createTransactionTransformed(_))
-
-  StreamUtility.printInStdOut(loadData)
+    .map(TransactionFactory.createTransactionTransformed(_))
+    .writeStream
+    .outputMode(OutputMode.Append)
+    .foreach(new CassandraSinkTransformed())
+    .start()
+  //StreamUtility.printInStdOut(loadData)
 
   Thread.sleep(2000)
+  println(" start sending data")
+  var cont = 0
   val producer: Producer[String, String] = new KafkaProducer(props)
   reader.foreach(transaction => {
+    cont = cont + 1
     producer.send(new ProducerRecord[String,String]("load-table-topic1", transaction.mkString(",")))
-    Thread.sleep(N_MILLISEC_IN_SEC * 0)
+    //Thread.sleep(N_MILLISEC_IN_SEC * 0)
   }
   )
-  println("this is the end")
+  println("this is the end, row:",cont)
     /*
     .writeStream
     .outputMode(OutputMode.Append)
