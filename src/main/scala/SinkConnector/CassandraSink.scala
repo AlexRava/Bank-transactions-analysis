@@ -29,7 +29,6 @@ class CassandraSink extends ForeachWriter[Transaction]{
 
     val query: String = s""" insert into ${CassandraDriver.keySpace}.${CassandraDriver.table} (${cols}) values('${t.DeviceOS}','${t.Browser}','${t.DeviceType}','${t.ScreenResolution}','${t.DeviceInfo}','${t.uid}',${t.TransactionAmt},'${t.ProductCD}',${t.isFraud},'${t.card1}','${t.card2}','${t.card3}','${t.card4}','${t.card5}','${t.card6}','${t.region}','${t.country}','${t.R_emaildomain}','${t.P_emaildomain}','${t.TransactionDT}','${t.TransactionID}','${t.D1}');"""
 
-    //println(query)
     driver.connector.withSessionDo(session => session.execute(query))
 
   }

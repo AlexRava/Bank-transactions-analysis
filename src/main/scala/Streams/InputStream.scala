@@ -5,6 +5,7 @@ import Data.DataObject.Transaction
 import org.apache.spark.sql.Dataset
 import Data.DataObject
 
+
 object InputStream extends StreamingFlow {
 
   import spark.implicits._

@@ -29,7 +29,9 @@ class DataTransformer() extends Transformer {
 
   override def compute( ) = {
     mergeStream()
+      //forse sarebbe meglio incapsulare la strategia da qualche parte, es. arriva come parametro
       .select($"uid")
+      //query to cassandra per farsi ridare le transactions già trasformate
 
 
 
