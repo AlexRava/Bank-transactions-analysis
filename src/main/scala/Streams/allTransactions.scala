@@ -20,7 +20,7 @@ object AllTransactions extends StreamingFlow{
     .load()
     .select( $"key" cast "string" as "uid", $"value" cast "string" as "json")
     //.select($"uid" , $"json".as[Transaction])
-    .select($"uid",from_json($"json",Transaction.schema) as "data")
+    .select($"uid",from_json($"json",Transaction.TransactionSchema) as "data")
     //.select($"data").as[Transaction]
     //.map(row => (row.fieldIndex("uid"),Transaction(row.toString.split(",").toList))) // non so se è proprio quello che voglio
 

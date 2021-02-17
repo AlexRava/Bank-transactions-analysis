@@ -1,7 +1,7 @@
 package Streams
 
 import App.App.spark
-import Data.DataObject.Transaction
+import Data.DataObject.{Transaction, TransactionFactory}
 import org.apache.spark.sql.Dataset
 import Data.DataObject
 
@@ -23,7 +23,7 @@ object InputStream extends StreamingFlow {
     .as[(String,String)]
     .map(_._2.split(",").toList)
     //.map(_.asInstanceOf[TransactionSerialized]) //non funziona perche lo split da in output una lista e non una tupla
-    .map(Transaction(_))
+    .map(TransactionFactory.createTransaction(_))
     .select($"*")
 
   //.map(_.uid)

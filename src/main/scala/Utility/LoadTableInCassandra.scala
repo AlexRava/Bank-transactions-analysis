@@ -4,8 +4,9 @@ import java.io.File
 import java.util.Properties
 
 import App.App.spark
-import Data.DataObject.Transaction
-import SinkConnector.CassandraSink
+import Data.DataObject.{Transaction, TransactionFactory, TransactionTransformed}
+import SinkConnector.{CassandraSink, CassandraSinkTransformed}
+import Streams.StreamUtility
 import com.github.tototoshi.csv.CSVReader
 import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerRecord}
 import org.apache.log4j.{Level, Logger}
@@ -43,30 +44,37 @@ object LoadTableInCassandra extends App{
   props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
 
 
-  val reader = CSVReader.open(new File("C:\\Users\\Alex\\Desktop\\Fraud_Historical_data\\historical_data.csv"))
+  val path = "C:\\Users\\Alex\\Desktop\\Fraud_Historical_data\\test_transformed.csv"
+  val reader = CSVReader.open(new File(path))
 
-  val producer: Producer[String, String] = new KafkaProducer(props)
-  reader.foreach(transaction => {
-    producer.send(new ProducerRecord[String,String]("load-table-topic", transaction.mkString(",")))
-    Thread.sleep(N_MILLISEC_IN_SEC * 0)
-    }
-  )
   import spark.implicits._
 
   val loadData = spark
     .readStream
     .format("kafka")
     .option("kafka.bootstrap.servers", "localhost:9092")
-    .option("subscribe", "load-table-topic")
+    .option("subscribe", "load-table-topic1")
     .load()
     .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
     .as[(String,String)]
     .map(_._2.split(",").toList)
-    //.map(TransactionTransformed(_))
+    //.map(TransactionFactory.createTransactionTransformed(_))
+
+  StreamUtility.printInStdOut(loadData)
+
+  Thread.sleep(2000)
+  val producer: Producer[String, String] = new KafkaProducer(props)
+  reader.foreach(transaction => {
+    producer.send(new ProducerRecord[String,String]("load-table-topic1", transaction.mkString(",")))
+    Thread.sleep(N_MILLISEC_IN_SEC * 0)
+  }
+  )
+  println("this is the end")
+    /*
     .writeStream
     .outputMode(OutputMode.Append)
-    .foreach(new CassandraSink())
+    .foreach(new CassandraSinkTransformed())
     .start()
-
-  loadData.awaitTermination()
+*/
+  spark.streams.awaitAnyTermination()
 }
