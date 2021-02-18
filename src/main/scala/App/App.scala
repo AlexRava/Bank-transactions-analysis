@@ -1,12 +1,14 @@
 package App
 
 import Data.DataObject.{Transaction, TransactionFactory}
-import Streams.{AllTransactions, AllUsersTransactions, InputStream, StreamUtility, StreamingFlow}
+import Streams.{AllTransactions, AllUsersTransactions, InputStream, StreamUtility, StreamingFlow, TransformedStream}
 import Transformer.{DataTransformer, Transformer}
 import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
 import org.apache.spark.sql.cassandra._
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
+import org.apache.spark.ml.PipelineModel
+import org.apache.spark.ml.feature.OneHotEncoder
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode}
@@ -43,7 +45,40 @@ object App extends App {
   val t = transformer.compute()
 
 
-  printStream(t)
+  // And load it back in during production
+  val pathOneHotModel = "/tmp/spark-logistic-regression-model"
+  val oneHotModel = PipelineModel.load(pathOneHotModel)
+val encoder = new OneHotEncoder()
+  /*val encoder = new OneHotEncoder()
+    .setInputCol("categoryIndex")
+    .setOutputCol("categoryVec")*/
+
+  val encoded = encoder.transform(indexed)
+  encoded.select("id", "categoryVec").show()
+  // $example off$
+  sc.stop()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  printStream(TransformedStream)
+
+  //printStream(t)
 
   spark.streams.awaitAnyTermination()
 }
