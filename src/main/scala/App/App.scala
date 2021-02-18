@@ -45,38 +45,33 @@ object App extends App {
   val t = transformer.compute()
 
 
+  val res = spark.readStream
+    .format("kafka")
+    .option("kafka.bootstrap.servers", "localhost:9092")
+    .option("subscribe", "results")
+    .load()
+  printStream(res)
+
+
   // And load it back in during production
-  val pathOneHotModel = "/tmp/spark-logistic-regression-model"
+  /*val pathOneHotModel = "/tmp/spark-logistic-regression-model"
   val oneHotModel = PipelineModel.load(pathOneHotModel)
-val encoder = new OneHotEncoder()
+  val encoder = new OneHotEncoder()*/
   /*val encoder = new OneHotEncoder()
     .setInputCol("categoryIndex")
-    .setOutputCol("categoryVec")*/
+    .setOutputCol("categoryVec")
 
   val encoded = encoder.transform(indexed)
   encoded.select("id", "categoryVec").show()
   // $example off$
-  sc.stop()
+  sc.stop()*/
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  printStream(TransformedStream)
+  //printStream(TransformedStream)
 
   //printStream(t)
 
