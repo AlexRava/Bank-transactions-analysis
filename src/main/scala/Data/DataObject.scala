@@ -53,26 +53,26 @@ object DataObject {
       .add("transactiondt", StringType) //DateTime = new DateTime(),
 
     def TransactionTransformedSchema = TransactionSchema
-      .add("n_trans_last_month_transactionamt_less_35",IntegerType)
-      .add("n_trans_last_month_35_less_transactionamt_greater_80" ,IntegerType)
-      .add("n_trans_last_month_transactionamt_greater_80" ,IntegerType)
-      .add("n_trans_last_month" ,IntegerType)
-      .add("is_transactionamt_over_than_perc_of_the_mean_wrt_lastmonth" ,IntegerType)
-      .add("n_trans_last_week_transactionamt_less" ,IntegerType)
-      .add("n_trans_last_week_35_less_transactionamt_greater_80" ,IntegerType)
-      .add("n_trans_last_week_transactionamt_greater_80" ,IntegerType)
-      .add("n_trans_last_week",IntegerType)
-      .add("is_transactionamt_over_than_perc_of_the_mean_wrt_lastweek" ,IntegerType)
-      .add("is_deviceos_habitual" ,IntegerType)
-      .add("is_browser_habitual" ,IntegerType)
-      .add("is_devicetype_habitual" ,IntegerType)
-      .add("is_screenresolution_habitual" ,IntegerType)
-      .add("is_deviceinfo_habitual",IntegerType)
-      .add("is_country_habitual" ,IntegerType)
-      .add("is_r_emaildomain_habitual" ,IntegerType)
-      .add("is_p_emaildomain_habitual" ,IntegerType)
-      .add("is_card4_habitual" ,IntegerType)
-      .add("is_card6_habitual" ,IntegerType)
+      .add("n_trans_last_month_transactionamt_less_35",StringType)
+      .add("n_trans_last_month_35_less_transactionamt_greater_80" ,StringType)
+      .add("n_trans_last_month_transactionamt_greater_80" ,StringType)
+      .add("n_trans_last_month" ,StringType)
+      .add("is_transactionamt_over_than_perc_of_the_mean_wrt_lastmonth" ,StringType)
+      .add("n_trans_last_week_transactionamt_less" ,StringType)
+      .add("n_trans_last_week_35_less_transactionamt_greater_80" ,StringType)
+      .add("n_trans_last_week_transactionamt_greater_80" ,StringType)
+      .add("n_trans_last_week",StringType)
+      .add("is_transactionamt_over_than_perc_of_the_mean_wrt_lastweek" ,StringType)
+      .add("is_deviceos_habitual" ,StringType)
+      .add("is_browser_habitual" ,StringType)
+      .add("is_devicetype_habitual" ,StringType)
+      .add("is_screenresolution_habitual" ,StringType)
+      .add("is_deviceinfo_habitual",StringType)
+      .add("is_country_habitual" ,StringType)
+      .add("is_r_emaildomain_habitual" ,StringType)
+      .add("is_p_emaildomain_habitual" ,StringType)
+      .add("is_card4_habitual" ,StringType)
+      .add("is_card6_habitual" ,StringType)
 
 
     /*{
@@ -92,9 +92,9 @@ object DataObject {
     l(3),
     l(4),
     l(5),
-    l(6).toDouble,
+    l(6),//.toDouble,
     l(7),
-    l(8).toInt,
+    l(8),//.toInt,
     l(9),
     l(10),
     l(11),
@@ -117,9 +117,9 @@ object DataObject {
     l(3),
     l(4),
     l(5),
-    l(6).toDouble,
+    l(6),//.toDouble,
     l(7),
-    l(8).toInt,
+    l(8),//.toInt,
     l(9),
     l(10),
     l(11),
@@ -133,15 +133,15 @@ object DataObject {
     l(19),
     l(20),
     l(21),
-    l(22).toDouble.toInt,
-    l(23).toDouble.toInt,
-    l(24).toDouble.toInt,
-    l(25).toDouble.toInt,
+    l(22),//.toDouble.toInt,
+    l(23),//.toDouble.toInt,
+    l(24),//.toDouble.toInt,
+    l(25),//.toDouble.toInt,
     l(27),
-    l(28).toDouble.toInt,
-    l(29).toDouble.toInt,
-    l(30).toDouble.toInt,
-    l(31).toDouble.toInt,
+    l(28),//.toDouble.toInt,
+    l(29),//.toDouble.toInt,
+    l(30),//.toDouble.toInt,
+    l(31),//.toDouble.toInt,
     l(32),
     l(33),
     l(34),
@@ -160,9 +160,9 @@ object DataObject {
                          ScreenResolution: String = "",
                          DeviceInfo: String = "",
                          uid: String = "",
-                         TransactionAmt: Double = 0,
+                         TransactionAmt: String = "",//Double = 0,
                          ProductCD: String = "",
-                         isFraud: Int = 0,
+                         isFraud:String = "",// Int = 0,
                          card1: String = "",
                          card2: String = "",
                          card3: String = "",
@@ -186,9 +186,9 @@ object DataObject {
                                      ScreenResolution: String = "",
                                      DeviceInfo: String = "",
                                      uid: String = "",
-                                     TransactionAmt: Double = 0,
+                                     TransactionAmt: String = "",//Double = 0,
                                      ProductCD: String = "",
-                                     isFraud: Int = 0,
+                                     isFraud: String = "",//Int = 0,
                                      card1: String = "",
                                      card2: String = "",
                                      card3: String = "",
@@ -202,15 +202,15 @@ object DataObject {
                                      TransactionDT: String = "",
                                      TransactionID: String = "",
                                      D1: String = "",
-                                     N_Trans_Last_month_TransactionAmt_less_35 :Int = 0,
-                                     N_Trans_Last_month_35_less_TransactionAmt_greater_80 :Int = 0,
-                                     N_Trans_Last_month_TransactionAmt_greater_80 :Int = 0,
-                                     N_Trans_Last_month :Int = 0,
+                                     N_Trans_Last_month_TransactionAmt_less_35 : String = "",//Int = 0,
+                                     N_Trans_Last_month_35_less_TransactionAmt_greater_80: String = "",//Int = 0,
+                                     N_Trans_Last_month_TransactionAmt_greater_80: String = "",//Int = 0,
+                                     N_Trans_Last_month :String = "",//Int = 0,
                                      IS_TransactionAmt_over_than_perc_of_the_mean_wrt_lastmonth :String = "",
-                                     N_Trans_Last_week_TransactionAmt_less :Int,
-                                     N_Trans_Last_week_35_less_TransactionAmt_greater_80 :Int = 0,
-                                     N_Trans_Last_week_TransactionAmt_greater_80 :Int = 0,
-                                     N_Trans_Last_week :Int = 0,
+                                     N_Trans_Last_week_TransactionAmt_less :String = "",//Int = 0,
+                                     N_Trans_Last_week_35_less_TransactionAmt_greater_80 :String = "",//Int = 0,
+                                     N_Trans_Last_week_TransactionAmt_greater_80 :String = "",//Int = 0,
+                                     N_Trans_Last_week :String = "",//Int = 0,
                                      IS_TransactionAmt_over_than_perc_of_the_mean_wrt_lastweek :String = "",
                                      IS_DeviceOS_habitual :String = "",
                                      IS_Browser_habitual :String = "",

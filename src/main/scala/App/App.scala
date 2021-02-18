@@ -45,12 +45,24 @@ object App extends App {
   val t = transformer.compute()
 
 
-  val res = spark.readStream
+
+  val transformed_transaction = TransformedStream.write()
+  transformed_transaction.writeStream.foreachBatch( (batchDF: DataFrame, batchId:Long) => {
+    batchDF.foreach(row => println(row))
+  }).start()
+
+
+
+
+  //printStream(transformed_transaction)
+
+  /*val res = spark
+    .readStream
     .format("kafka")
     .option("kafka.bootstrap.servers", "localhost:9092")
     .option("subscribe", "results")
     .load()
-  printStream(res)
+  printStream(res)*/
 
 
   // And load it back in during production
