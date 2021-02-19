@@ -7,28 +7,30 @@ import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.sql.functions.{struct, to_json}
 import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode, StreamingQuery}
 import org.apache.spark.sql.cassandra._
+import Utility.DataFrameOperation
 
 import scala.collection.mutable
 
 trait Transformer{
-  def addSource(dataSource: DataFrame)
+  def addSource(sourceName: String, dataSource: DataFrame)
   //def compute():StreamingQuery
 }
 
 class DataTransformer() extends Transformer with StreamingFlow {
 
   import spark.implicits._
+  import DataFrameOperation.ImplicitsDataFrameCustomOperation
 
 
-  var dataSources = mutable.Set[DataFrame]()
+  var dataSources: mutable.Map[String,DataFrame] = mutable.HashMap()
 
   //override def setSource(dataSource: StreamingFlow) = this.dataSource = dataSource
   //override def setSource(dataSource: StreamingFlow*): Unit = this.dataSource. = dataSource
 
-  override def addSource(dataSource: DataFrame) = this.dataSources.add(dataSource)
+  override def addSource(sourceName: String, dataSource: DataFrame) = this.dataSources.put(sourceName,dataSource)
 
   //deve essere incapusulato da qualche parte come mia strategia "non va bene prendere la testa, devo prendere l'input stream
-  private def mergeStream() = dataSources.head
+  private def mergeStream(mergeStrategy) = dataSources.merge(merge)get()
 
   override def readData(): DataFrame = mergeStream()
 
@@ -62,12 +64,7 @@ class DataTransformer() extends Transformer with StreamingFlow {
     )
   }
 
-  implicit class DataFrameCustomOperation(base: DataFrame){
 
-    def customOperation(): DataFrame ={
-      //your business logic
-      base
-    }
 
     //def op1:Dataframe =
   }
