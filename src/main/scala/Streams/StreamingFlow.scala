@@ -1,16 +1,19 @@
 package Streams
 
-import org.apache.spark.sql.{DataFrame, Dataset}
+import org.apache.spark.sql.streaming.DataStreamWriter
+import org.apache.spark.sql.{DataFrame, Dataset, Row}
 
 trait StreamingFlow {
 
   //def readStream[T]():Dataset[T]
-  def readStream(): DataFrame
+  def readData(): DataFrame
+  def compute(): DataFrame
+  def writeData(): DataStreamWriter[Row]
+
+  def start() = writeData.start()
 
   /*def read()
   def write()*/
-
-  def start()
-  def conf()
+  //def conf()
   //def stream
 }

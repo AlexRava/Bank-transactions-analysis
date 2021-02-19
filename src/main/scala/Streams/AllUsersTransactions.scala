@@ -12,7 +12,7 @@ object AllUsersTransactions extends StreamingFlow {
   import spark.implicits._
 
   def allUserTransactions(userTransaction : DataFrame) =
-    userTransaction
+    /*userTransaction
     .select($"uid")
     .writeStream
     .outputMode(OutputMode.Update)
@@ -23,6 +23,7 @@ object AllUsersTransactions extends StreamingFlow {
         .load()
         .filter("uid = '" + user.mkString + "'")// 'where' is computed on Cassandra Server, not in spark ( ?? )
         .select($"uid" as "key" , to_json(struct($"*")) as "value")
+        //.foreach(row => println(row))
 
         //.show()
         //.toDF("key", "value")
@@ -33,7 +34,7 @@ object AllUsersTransactions extends StreamingFlow {
         .option("topic", "allTransactions") // HOW TO PARTITION (?)
         .save()
       )
-    })
+    })*/
   override def readStream(): DataFrame = ???
 
 

@@ -34,14 +34,17 @@ object App extends App {
 
   //import spark.implicits._
 
-  val transaction = InputStream.readStream//transaction
-
-  AllUsersTransactions.allUserTransactions(transaction).start()
+  //val transaction = InputStream.readStream//transaction
+  InputStream.start()
+  //AllUsersTransactions.allUserTransactions(transaction).start()
 
   //transform data
   val transformer: Transformer = new DataTransformer()
-  transformer.addSource(AllTransactions)
-  transformer.addSource(InputStream)
+  //transformer.addSource(AllTransactions)
+  transformer.addSource(InputStream.readData())
+  //transformer.addSource()
+  val model: Model = new Model()
+
   val t = transformer.compute()
 
 

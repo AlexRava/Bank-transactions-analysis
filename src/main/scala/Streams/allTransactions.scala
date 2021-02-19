@@ -7,23 +7,23 @@ import org.apache.spark.sql.functions.{col, from_json, window}
 import org.apache.spark.sql.functions._
 
 
-object AllTransactions extends StreamingFlow{
+/*object AllTransactions extends StreamingFlow{
 
   //val transformer :
   import spark.implicits._
 
-  override def readStream =  spark
-    .readStream
+ // override def readStream =  spark
+   /* .readStream
     .format("kafka")
     .option("kafka.bootstrap.servers", "localhost:9092")
     .option("subscribe", "allTransactions")
     .load()
     .select( $"key" cast "string" as "uid", $"value" cast "string" as "json")
     //.select($"uid" , $"json".as[Transaction])
-    .select($"uid",from_json($"json",Transaction.TransactionSchema) as "data")
+    //.select($"uid",from_json($"json",Transaction.TransactionSchema) as "data")
     //.select($"data").as[Transaction]
     //.map(row => (row.fieldIndex("uid"),Transaction(row.toString.split(",").toList))) // non so se è proprio quello che voglio
-
+*/
   /*
     //CI SARà UN PUNTO DI JOIN TRA IL RISULTATI DI FEATURE1, FEATURE2, FEATUREn E CON IL FLUSSO DI DATI in arrivo dall'utente ( per avere tutti i valori)
   //  forse il join è prima considerato che alcuni valori della transazione servono per calcolar le feature
@@ -53,4 +53,4 @@ object AllTransactions extends StreamingFlow{
   override def start(): Unit = ???
 
   override def conf(): Unit = ???
-}
+}*/
