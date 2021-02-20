@@ -1,7 +1,7 @@
 package App
 
 import Data.DataObject.{Transaction, TransactionFactory}
-import Streams.{ InputStream, Predict, RegisterTransactions, StreamUtility, StreamingFlow, StreamingFlowWithMultipleSources, TransformedStream}
+import Streams.{ InputStream, Predict, RegisterTransactions, StreamUtility, StreamingFlow, StreamingFlowWithMultipleSources}
 import Transformer.{DataTransformer, Transformer}
 import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
 import org.apache.spark.sql.cassandra._
@@ -33,15 +33,40 @@ object Application extends App {
     .config(conf)
     .getOrCreate()
 
-  //import spark.implicits._
+
+
+
+
+
 
   InputStream.startFlow()
-  RegisterTransactions.startFlow()
+  //RegisterTransactions.startFlow()
 
   val transformer: StreamingFlowWithMultipleSources = new DataTransformer()
-  transformer.addSource("INPUT_DATA", InputStream.readData())
 
+  transformer.addSource("INPUT_DATA", InputStream.readData())
+  printStream(transformer)
+/*
   Predict.startFlow()
+
+  */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   //transformer.addSource()
   //val model: Model = new Model()
@@ -77,7 +102,6 @@ object Application extends App {
 */
 
   //printStream(TransformedStream)
-
   //printStream(t)
 
   spark.streams.awaitAnyTermination()

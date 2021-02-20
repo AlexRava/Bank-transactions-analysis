@@ -2,10 +2,11 @@ package Streams
 
 import App.Application.spark
 import Data.DataObject.{Transaction, TransactionFactory}
-import org.apache.spark.sql.{DataFrame, Dataset}
+import org.apache.spark.sql.{DataFrame, Dataset, Row, streaming}
 import Data.DataObject
+import Sources.Source
 import org.apache.spark.sql.functions.{struct, to_json}
-import org.apache.spark.sql.streaming.OutputMode
+import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode}
 import org.apache.spark.sql.cassandra._
 
 
@@ -13,12 +14,7 @@ object InputStream extends StreamingFlow {
 
   import spark.implicits._
 
-  override def readData() /*Dataset[Transaction]*/ = spark
-    .readStream
-    .format("kafka")
-    .option("kafka.bootstrap.servers", "localhost:9092")
-    .option("subscribe", "input-topic")
-    .load()
+  override def readData(streamSource: Source) /*Dataset[Transaction]*/ = streamSource
 
   override def compute() =
     readData
@@ -30,8 +26,7 @@ object InputStream extends StreamingFlow {
     .select($"*")
     .select($"uid")
 
-  override def writeData[DataStreamWriter[Row]] =
-    compute
+  override def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = compute
     .writeStream
     .outputMode(OutputMode.Update)
     .foreachBatch( retrieveDataforEachUsersInBatch )
@@ -75,4 +70,5 @@ object InputStream extends StreamingFlow {
     .save()*/
 
   //send all transactions to the feature eng topic
+
 }

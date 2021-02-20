@@ -10,7 +10,7 @@ trait Flow {
 
   def readData(): DataFrame
   def compute(): DataFrame
-  def writeData[T <: AnyRef](): AnyRef
+  //def writeData[T <: AnyRef](): AnyRef
 
   //def writeData [T]():T
   //def writeData[Any]():Any
@@ -21,7 +21,7 @@ trait Flow {
 
 trait FinishedFlow extends Flow{
 
-  override def writeData[DataFrameWriter[Row]](): org.apache.spark.sql.DataFrameWriter[Row]
+  def writeData[DataFrameWriter[Row]](): org.apache.spark.sql.DataFrameWriter[Row]
 
   override def startFlow() = writeData.save()
 
@@ -30,7 +30,7 @@ trait FinishedFlow extends Flow{
 
 trait StreamingFlow extends Flow{
 
-  override def writeData[DataStreamWriter[Row]](): org.apache.spark.sql.streaming.DataStreamWriter[Row]
+  def writeData[DataStreamWriter[Row]](): org.apache.spark.sql.streaming.DataStreamWriter[Row]
 
   override def startFlow() = writeData.start()
 
