@@ -35,7 +35,7 @@ object App extends App {
   //import spark.implicits._
 
   //val transaction = InputStream.readStream//transaction
-  InputStream.start()
+  InputStream.initFlow()
   //AllUsersTransactions.allUserTransactions(transaction).start()
 
   //transform data

@@ -1,5 +1,6 @@
 package Streams
 
+import App.App.spark
 import org.apache.spark.sql.streaming.DataStreamWriter
 import org.apache.spark.sql.{DataFrame, DataFrameWriter, Dataset, Row, streaming}
 
@@ -7,9 +8,10 @@ trait Flow {
 
   def readData(): DataFrame
   def compute(): DataFrame
+  def writeData[T <: AnyRef](): AnyRef
+
   //def writeData [T]():T
-  def writeData[T <: Any](): Any
-  //def writeData[T <: Dataset[Row] ](): Dataset[Row]
+  //def writeData[Any]():Any
 
   def initFlow()
 
@@ -17,24 +19,19 @@ trait Flow {
 
 trait FinishedFlow extends Flow{
 
-  override def writeData[DataFrameWriter[Row]](): DataFrameWriter[Row]
+  override def writeData[DataFrameWriter[Row]](): org.apache.spark.sql.DataFrameWriter[Row]
 
-  override def initFlow() = writeData.asInstanceOf[DataFrameWriter[Row]].save()
+  override def initFlow() = writeData.save()
 
 
 }
 
 trait StreamingFlow extends Flow{
 
-  override def writeData[DataStreamWriter[Row]]():DataStreamWriter[Row]
+  override def writeData[DataStreamWriter[Row]](): org.apache.spark.sql.streaming.DataStreamWriter[Row]
 
-  override def initFlow() = writeData.asInstanceOf[DataStreamWriter[Row]].start()
+  override def initFlow() = writeData.start()
 
-
-  /*def read()
-  def write()*/
-  //def conf()
-  //def stream
 }
 
 

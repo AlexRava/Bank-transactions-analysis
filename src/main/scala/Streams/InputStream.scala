@@ -30,34 +30,30 @@ object InputStream extends StreamingFlow {
     .select($"*")
     .select($"uid")
 
-  override def writeData =
+  override def writeData[DataStreamWriter[Row]] =
     compute
     .writeStream
     .outputMode(OutputMode.Update)
     .foreachBatch( retrieveDataforEachUsersInBatch )
 
-  //override def start() = writeData.start()
+  val retrieveDataforEachUsersInBatch =
+    (batchDF: DataFrame, batchId:Long) => batchDF.collect.foreach(userInARow => new RetrieveAllTransactionsOf(userInARow.mkString).initFlow())
 
 
 
-  val retrieveDataforEachUsersInBatch = (batchDF: DataFrame, batchId:Long) => {
-      batchDF.collect.foreach(user => spark
-        .read
-        .cassandraFormat("transactions1","bank")
-        .load()
-        .filter("uid = '" + user.mkString + "'")// 'where' is computed on Cassandra Server, not in spark ( ?? )
-        .select($"uid" as "key" , to_json(struct($"*")) as "value")
-        //.foreach(row => println(row))
-        //.show()
-        .write
-        .format("kafka")
-        .option("kafka.bootstrap.servers", "localhost:9092")
-        .option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
-        .option("topic", "allTransactions") // HOW TO PARTITION (?)
-        .save()
-      )
-    }
-
+  /*.read
+.cassandraFormat("transactions1","bank")
+.load()
+.filter("uid = '" + user.mkString + "'")// 'where' is computed on Cassandra Server, not in spark ( ?? )
+.select($"uid" as "key" , to_json(struct($"*")) as "value")
+//.foreach(row => println(row))
+//.show()
+.write
+.format("kafka")
+.option("kafka.bootstrap.servers", "localhost:9092")
+.option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
+.option("topic", "allTransactions") // HOW TO PARTITION (?)
+.save()*/
 
   //.map(_.uid)
   //.filter(t => (t.TransactionID != "") & (t.uid != ""))
@@ -79,11 +75,4 @@ object InputStream extends StreamingFlow {
     .save()*/
 
   //send all transactions to the feature eng topic
-
-
-
-
-  override def conf(): Unit = ???
-
-
 }

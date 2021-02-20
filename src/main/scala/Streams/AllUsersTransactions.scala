@@ -1,6 +1,6 @@
 package Streams
 
-import App.App.{spark, transaction}
+import App.App.{spark}
 import Data.DataObject.Transaction
 import org.apache.spark.sql.{DataFrame, Dataset}
 import org.apache.spark.sql.functions.{struct, to_json}
