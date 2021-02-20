@@ -2,11 +2,10 @@ package Transformer
 
 import App.App.spark
 import Data.DataObject.Transaction
-import Streams.{MultipleSource, StreamingFlow, StreamingFlowWithMultipleSources}
-import org.apache.spark.sql.{DataFrame, Row}
+import Streams.{RetrieveTransformedTransaction, StreamingFlow, StreamingFlowWithMultipleSources}
+import org.apache.spark.sql.{DataFrame, Row, streaming}
 import org.apache.spark.sql.functions.{struct, to_json}
 import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode, StreamingQuery}
-import org.apache.spark.sql.cassandra._
 import Utility.DataFrameOperation
 
 import scala.collection.mutable
@@ -16,7 +15,7 @@ trait Transformer{
   //def compute():StreamingQuery
 }
 
-class DataTransformer() extends StreamingFlowWithMultipleSources/*extends Transformer with StreamingFlow*/ {
+class DataTransformer extends StreamingFlowWithMultipleSources/*extends Transformer with StreamingFlow*/ {
 
   import spark.implicits._
   import DataFrameOperation.ImplicitsDataFrameCustomOperation
@@ -38,35 +37,15 @@ class DataTransformer() extends StreamingFlowWithMultipleSources/*extends Transf
     .customOperation()
 
 
-
-  override def writeData(): DataStreamWriter[Row] =
+  override def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = compute
     //forse sarebbe meglio incapsulare la strategia da qualche parte, es. arriva come parametro
-    compute
-    .select($"uid")
+    .select($"uid") // ADD TRANSACTION ID
     .writeStream
     .outputMode(OutputMode.Update)
     .foreachBatch( retrieveTrasformedDataFromDb )
 
-  val retrieveTrasformedDataFromDb = (batchDF: DataFrame, batchId: Long) => {
-    batchDF.collect.foreach(user => spark
-      .read
-      .cassandraFormat("transformed_transactions", "bank")
-      .load()
-      .filter("uid = '" + user.mkString + "'") // 'where' is computed on Cassandra Server, not in spark ( ?? )
-      .select($"uid" as "key", to_json(struct($"*")) as "value")
-        //.show()
-        //.toDF("key", "value")
-      .write
-      .format("kafka")
-      .option("kafka.bootstrap.servers", "localhost:9092")
-      .option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
-      .option("topic", "transaction-transformed") // HOW TO PARTITION (?)
-        save()
-    )
-  }
+  val retrieveTrasformedDataFromDb =
+    (batchDF: DataFrame, batchId: Long) => batchDF.collect.foreach(user => new RetrieveTransformedTransaction(user.mkString, "ID").initFlow()) // ADD TRANSACTION ID
 
 
-
-    //def op1:Dataframe =
-  }
 }

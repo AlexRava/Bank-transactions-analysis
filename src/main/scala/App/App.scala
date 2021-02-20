@@ -38,11 +38,10 @@ object App extends App {
   InputStream.initFlow()
   RegisterTransactions.initFlow()
 
-
-  //transform data
   val transformer: StreamingFlowWithMultipleSources = new DataTransformer()
-  //transformer.addSource(AllTransactions)
   transformer.addSource("INPUT_DATA", InputStream.readData())
+
+
   //transformer.addSource()
   val model: Model = new Model()
   val t = transformer.compute()
