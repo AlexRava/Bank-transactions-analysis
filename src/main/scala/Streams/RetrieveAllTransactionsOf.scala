@@ -1,5 +1,5 @@
 package Streams
-import App.App.spark
+import App.Application.spark
 import org.apache.spark.sql.functions.{struct, to_json}
 import org.apache.spark.sql.{DataFrame, DataFrameWriter, Row}
 import org.apache.spark.sql.DataFrameWriter

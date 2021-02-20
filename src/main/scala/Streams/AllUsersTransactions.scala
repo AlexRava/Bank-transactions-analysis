@@ -1,6 +1,6 @@
-package Streams
+/*package Streams
 
-import App.App.{spark}
+import App.Application.spark
 import Data.DataObject.Transaction
 import org.apache.spark.sql.{DataFrame, Dataset}
 import org.apache.spark.sql.functions.{struct, to_json}
@@ -44,3 +44,4 @@ object AllUsersTransactions extends StreamingFlow {
   override def conf(): Unit = ???
 
 }
+*/

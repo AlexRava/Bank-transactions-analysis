@@ -1,13 +1,13 @@
-package Streams
+/*package Streams
 
-import App.App.spark
+import App.Application.spark
 import Data.DataObject.Transaction
 import Transformer.DataTransformer
 import org.apache.spark.sql.functions.{col, from_json, window}
 import org.apache.spark.sql.functions._
 
 
-/*object AllTransactions extends StreamingFlow{
+object AllTransactions extends StreamingFlow{
 
   //val transformer :
   import spark.implicits._

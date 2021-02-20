@@ -1,9 +1,11 @@
+/*
 package Streams
+
 import java.io.File
 
-import App.App.spark
+import App.Application.spark
 import Data.DataObject.{Transaction, TransactionFactory}
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{DataFrame, Row, streaming}
 import org.apache.spark.sql.functions.{from_json, struct, to_json}
 import org.apache.spark.sql.streaming.{OutputMode, StreamingQuery}
 import org.pmml4s.spark.ScoreModel
@@ -11,7 +13,7 @@ import org.pmml4s.spark.ScoreModel
 object TransformedStream extends StreamingFlow {
   import spark.implicits._
 
-  override def readStream() = ???
+  //override def readStream() = ???
 
   def write():/*StreamingQuery*/DataFrame  =  spark
       .readStream
@@ -69,7 +71,13 @@ object TransformedStream extends StreamingFlow {
     val model = ScoreModel.fromFile(new File(pathModel))
   }
 
-  override def start(): Unit = ???
+  //override def start(): Unit = ???
 
-  override def conf(): Unit = ???
+  //override def conf(): Unit = ???
+  override def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = ???
+
+  override def readData(): DataFrame = ???
+
+  override def compute(): DataFrame = ???
 }
+*/

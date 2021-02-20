@@ -3,7 +3,7 @@ package Utility
 import java.io.File
 import java.util.Properties
 
-import App.App.spark
+import App.Application.spark
 import Data.DataObject.{Transaction, TransactionFactory, TransactionTransformed}
 import SinkConnector.{CassandraSink, CassandraSinkTransformed}
 import Streams.StreamUtility

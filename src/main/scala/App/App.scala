@@ -1,7 +1,7 @@
 package App
 
 import Data.DataObject.{Transaction, TransactionFactory}
-import Streams.{AllUsersTransactions, InputStream, RegisterTransactions, StreamUtility, StreamingFlow, StreamingFlowWithMultipleSources, TransformedStream}
+import Streams.{ InputStream, Predict, RegisterTransactions, StreamUtility, StreamingFlow, StreamingFlowWithMultipleSources, TransformedStream}
 import Transformer.{DataTransformer, Transformer}
 import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
 import org.apache.spark.sql.cassandra._
@@ -14,8 +14,9 @@ import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode}
 import org.apache.spark.sql.functions._
 
-object App extends App {
-  def printStream(stream: StreamingFlow) = StreamUtility.printInStdOut(stream.readStream)
+object Application extends App {
+
+  def printStream(stream: StreamingFlow) = StreamUtility.printInStdOut(stream.compute())
   def printStream(stream: DataFrame) = StreamUtility.printInStdOut(stream)
 
   Logger.getLogger("org").setLevel(Level.ERROR)
@@ -34,24 +35,21 @@ object App extends App {
 
   //import spark.implicits._
 
-
-  InputStream.initFlow()
-  RegisterTransactions.initFlow()
+  InputStream.startFlow()
+  RegisterTransactions.startFlow()
 
   val transformer: StreamingFlowWithMultipleSources = new DataTransformer()
   transformer.addSource("INPUT_DATA", InputStream.readData())
 
+  Predict.startFlow()
 
   //transformer.addSource()
-  val model: Model = new Model()
-  val t = transformer.compute()
+  //val model: Model = new Model()
+  /*val t = transformer.compute()
   val transformed_transaction = TransformedStream.write()
   transformed_transaction.writeStream.foreachBatch( (batchDF: DataFrame, batchId:Long) => {
     batchDF.foreach(row => println(row))
   }).start()
-
-
-
 
   //printStream(transformed_transaction)
 
@@ -76,11 +74,7 @@ object App extends App {
   encoded.select("id", "categoryVec").show()
   // $example off$
   sc.stop()*/
-
-
-
-
-
+*/
 
   //printStream(TransformedStream)
 

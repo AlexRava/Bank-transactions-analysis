@@ -1,6 +1,6 @@
 package Streams
 
-import App.App.spark
+import App.Application.spark
 import Data.DataObject.{Transaction, TransactionFactory}
 import org.apache.spark.sql.{DataFrame, Dataset}
 import Data.DataObject
@@ -37,7 +37,7 @@ object InputStream extends StreamingFlow {
     .foreachBatch( retrieveDataforEachUsersInBatch )
 
   val retrieveDataforEachUsersInBatch =
-    (batchDF: DataFrame, batchId:Long) => batchDF.collect.foreach(userInARow => new RetrieveAllTransactionsOf(userInARow.mkString).initFlow())
+    (batchDF: DataFrame, batchId:Long) => batchDF.collect.foreach(userInARow => new RetrieveAllTransactionsOf(userInARow.mkString).startFlow())
 
 
 

@@ -1,6 +1,6 @@
 package Transformer
 
-import App.App.spark
+import App.Application.spark
 import Data.DataObject.Transaction
 import Streams.{RetrieveTransformedTransaction, StreamingFlow, StreamingFlowWithMultipleSources}
 import org.apache.spark.sql.{DataFrame, Row, streaming}
@@ -45,7 +45,7 @@ class DataTransformer extends StreamingFlowWithMultipleSources/*extends Transfor
     .foreachBatch( retrieveTrasformedDataFromDb )
 
   val retrieveTrasformedDataFromDb =
-    (batchDF: DataFrame, batchId: Long) => batchDF.collect.foreach(user => new RetrieveTransformedTransaction(user.mkString, "ID").initFlow()) // ADD TRANSACTION ID
+    (batchDF: DataFrame, batchId: Long) => batchDF.collect.foreach(user => new RetrieveTransformedTransaction(user.mkString, "ID").startFlow()) // ADD TRANSACTION ID
 
 
 }

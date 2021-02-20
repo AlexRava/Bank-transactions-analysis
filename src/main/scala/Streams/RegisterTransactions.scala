@@ -1,6 +1,6 @@
 package Streams
 
-import App.App.spark
+import App.Application.spark
 import Data.DataObject.Transaction
 import SinkConnector.CassandraSink
 import org.apache.spark.sql.{DataFrame, Row, streaming}
