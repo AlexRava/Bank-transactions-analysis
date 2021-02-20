@@ -1,7 +1,7 @@
 package App
 
 import Data.DataObject.{Transaction, TransactionFactory}
-import Streams.{AllTransactions, AllUsersTransactions, InputStream, StreamUtility, StreamingFlow, TransformedStream}
+import Streams.{AllUsersTransactions, InputStream, RegisterTransactions, StreamUtility, StreamingFlow, StreamingFlowWithMultipleSources, TransformedStream}
 import Transformer.{DataTransformer, Transformer}
 import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
 import org.apache.spark.sql.cassandra._
@@ -34,21 +34,18 @@ object App extends App {
 
   //import spark.implicits._
 
-  //val transaction = InputStream.readStream//transaction
+
   InputStream.initFlow()
-  //AllUsersTransactions.allUserTransactions(transaction).start()
+  RegisterTransactions.initFlow()
+
 
   //transform data
-  val transformer: Transformer = new DataTransformer()
+  val transformer: StreamingFlowWithMultipleSources = new DataTransformer()
   //transformer.addSource(AllTransactions)
-  transformer.addSource(InputStream.readData())
+  transformer.addSource("INPUT_DATA", InputStream.readData())
   //transformer.addSource()
   val model: Model = new Model()
-
   val t = transformer.compute()
-
-
-
   val transformed_transaction = TransformedStream.write()
   transformed_transaction.writeStream.foreachBatch( (batchDF: DataFrame, batchId:Long) => {
     batchDF.foreach(row => println(row))

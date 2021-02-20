@@ -4,6 +4,8 @@ import App.App.spark
 import org.apache.spark.sql.streaming.DataStreamWriter
 import org.apache.spark.sql.{DataFrame, DataFrameWriter, Dataset, Row, streaming}
 
+import scala.collection.mutable
+
 trait Flow {
 
   def readData(): DataFrame
@@ -33,5 +35,17 @@ trait StreamingFlow extends Flow{
   override def initFlow() = writeData.start()
 
 }
+
+trait MultipleSources /*extends StreamingFlow*/{
+
+  var dataSources: mutable.Map[String,DataFrame] = mutable.HashMap()
+
+  def addSource(sourceName: String, dataSource: DataFrame) = this.dataSources.put(sourceName,dataSource)
+
+  def mergeSources(sources: mutable.Map[String,DataFrame]): DataFrame
+
+}
+
+trait StreamingFlowWithMultipleSources extends StreamingFlow with MultipleSources
 
 
