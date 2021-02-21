@@ -2,25 +2,30 @@ package Transformer
 
 import App.Application.spark
 import Data.DataObject.Transaction
+import Sources.KafkaSource
 import Streams.{RetrieveTransformedTransaction, StreamingFlow, StreamingFlowWithMultipleSources}
 import org.apache.spark.sql.{DataFrame, Row, streaming}
 import org.apache.spark.sql.functions.{struct, to_json}
 import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode, StreamingQuery}
-import Utility.DataFrameOperation
+import Utility.{DataFrameOperation, MergeStrategy}
 
 import scala.collection.mutable
 
 trait Transformer{
   def addSource(sourceName: String, dataSource: DataFrame)
-  //def compute():StreamingQuery
 }
 
-class DataTransformer extends StreamingFlowWithMultipleSources/*extends Transformer with StreamingFlow*/ {
+class DataTransformer(var otuputSource: KafkaSource) extends StreamingFlowWithMultipleSources/*extends Transformer with StreamingFlow*/ {
 
+  var mergeStrategy : MergeStrategy
   import spark.implicits._
   import DataFrameOperation.ImplicitsDataFrameCustomOperation
 
-  override def mergeSources(sources: mutable.Map[String,DataFrame]): DataFrame = this.dataSources.get("INPUT_DATA").get
+  def setMergeStrategy(strategy: MergeStrategy) = this.mergeStrategy = strategy
+
+  def mergeSources(sources: mutable.Map[String,DataFrame]): DataFrame = this.mergeStrategy.merge(sources)
+  //
+  // this.dataSources.get("INPUT_DATA").get
 
   //var dataSources: mutable.Map[String,DataFrame] = mutable.HashMap()
   //override def setSource(dataSource: StreamingFlow) = this.dataSource = dataSource
@@ -43,7 +48,7 @@ class DataTransformer extends StreamingFlowWithMultipleSources/*extends Transfor
     .foreachBatch( retrieveTrasformedDataFromDb )
 
   val retrieveTrasformedDataFromDb =
-    (batchDF: DataFrame, batchId: Long) => batchDF.collect.foreach(user => new RetrieveTransformedTransaction(user.mkString, "ID").startFlow()) // ADD TRANSACTION ID
+    (batchDF: DataFrame, batchId: Long) => batchDF.collect.foreach(user => new RetrieveTransformedTransaction(user.mkString, "ID",,,).startFlow()) // ADD TRANSACTION ID
 
 
 }
