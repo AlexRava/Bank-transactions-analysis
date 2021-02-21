@@ -1,7 +1,8 @@
 package App
 
 import Data.DataObject.{Transaction, TransactionFactory}
-import Streams.{ InputStream, Predict, RegisterTransactions, StreamUtility, StreamingFlow, StreamingFlowWithMultipleSources}
+import Sources.KafkaSources.{AllTransactionSource, InputSource}
+import Streams.{InputStream, Predict, RegisterTransactions, StreamUtility, StreamingFlow, StreamingFlowWithMultipleSources}
 import Transformer.{DataTransformer, Transformer}
 import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
 import org.apache.spark.sql.cassandra._
@@ -39,7 +40,8 @@ object Application extends App {
 
 
 
-  InputStream.startFlow()
+  var input = new InputStream(InputSource, AllTransactionSource) //fare una factory settando le source
+    input.startFlow()
   //RegisterTransactions.startFlow()
 
   val transformer: StreamingFlowWithMultipleSources = new DataTransformer()

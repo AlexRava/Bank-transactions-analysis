@@ -17,13 +17,15 @@ trait Transformer{
 
 class DataTransformer(var otuputSource: KafkaSource) extends StreamingFlowWithMultipleSources/*extends Transformer with StreamingFlow*/ {
 
-  var mergeStrategy : MergeStrategy
   import spark.implicits._
   import DataFrameOperation.ImplicitsDataFrameCustomOperation
 
-  def setMergeStrategy(strategy: MergeStrategy) = this.mergeStrategy = strategy
+  var mergeStrategy : Map[String,DataFrame] => DataFrame
+  var sources: Map[String,DataFrame]
 
-  def mergeSources(sources: mutable.Map[String,DataFrame]): DataFrame = this.mergeStrategy.merge(sources)
+  def setMergeStrategy(strategy: (Map[String,DataFrame] => DataFrame) ) = this.mergeStrategy = strategy
+
+  def mergeSources(): DataFrame = this.mergeStrategy(sources)
   //
   // this.dataSources.get("INPUT_DATA").get
 
@@ -48,7 +50,7 @@ class DataTransformer(var otuputSource: KafkaSource) extends StreamingFlowWithMu
     .foreachBatch( retrieveTrasformedDataFromDb )
 
   val retrieveTrasformedDataFromDb =
-    (batchDF: DataFrame, batchId: Long) => batchDF.collect.foreach(user => new RetrieveTransformedTransaction(user.mkString, "ID",,,).startFlow()) // ADD TRANSACTION ID
+    (batchDF: DataFrame, batchId: Long) => batchDF.collect.foreach(user => new RetrieveTransformedTransaction(user.mkString, "ID",).startFlow()) // ADD TRANSACTION ID
 
 
 }
