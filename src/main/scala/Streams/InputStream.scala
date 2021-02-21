@@ -5,13 +5,18 @@ import Data.DataObject.{Transaction, TransactionFactory}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, streaming}
 import Data.DataObject
 import Sources.CassandraSources.DbHistoricalData
+import Sources.KafkaSources.{AllTransactionSource, InputSource}
 import Sources.{CassandraSource, KafkaSource, Source}
 import org.apache.spark.sql.functions.{struct, to_json}
 import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode}
 import org.apache.spark.sql.cassandra._
 
 
-class InputStream(var inputSource: KafkaSource, var outputSource: KafkaSource) extends StreamingFlow {
+//class InputStream(var inputSource: KafkaSource, var outputSource: KafkaSource) extends StreamingFlow {
+object InputStream extends StreamingFlow {
+
+  val inputSource: KafkaSource = InputSource
+  val outputSource: KafkaSource = AllTransactionSource
 
   import spark.implicits._
 

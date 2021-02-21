@@ -36,12 +36,11 @@ object Application extends App {
 
 
 
+  //var input = new InputStream(InputSource, AllTransactionSource) //fare una factory settando le source
+  //input.startFlow()
 
+  InputStream.startFlow()
 
-
-
-  var input = new InputStream(InputSource, AllTransactionSource) //fare una factory settando le source
-    input.startFlow()
   //RegisterTransactions.startFlow()
 
   val transformer: StreamingFlowWithMultipleSources = new DataTransformer()

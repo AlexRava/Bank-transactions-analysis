@@ -1,18 +1,22 @@
 package Streams
 import App.Application.spark
+import Sources.{BankCassandraSource, KafkaSource, SimulationCassandraSource}
 import org.apache.spark.sql
 import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.sql.cassandra._
 import org.apache.spark.sql.functions.{struct, to_json}
 
 
-class RetrieveTransformedTransaction(val user: String, val transactionId: String) extends FinishedFlow {
+class RetrieveTransformedTransaction(val user: String,
+                                     val transactionId: String,
+                                     val dBSource: SimulationCassandraSource,
+                                     val outputSource: KafkaSource) extends FinishedFlow {
 
   import spark.implicits._
 
   override def readData(): DataFrame = spark
     .read
-    .cassandraFormat("transformed_transactions", "bank")
+    .cassandraFormat(dBSource.table, dBSource.namespace)
     .load()
 
   override def compute(): DataFrame = readData()
@@ -21,8 +25,8 @@ class RetrieveTransformedTransaction(val user: String, val transactionId: String
 
   override def writeData[DataFrameWriter[Row]](): sql.DataFrameWriter[Row] = compute()
     .write
-    .format("kafka")
+    .format(outputSource.sourceType)
     .option("kafka.bootstrap.servers", "localhost:9092")
     .option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
-    .option("topic", "transaction-transformed") // HOW TO PARTITION (?)
+    .option("topic", outputSource.topic) // HOW TO PARTITION (?)
 }
