@@ -1,14 +1,17 @@
 package Streams
 
 import App.Application.spark
+import Sources.Source
 import org.apache.spark.sql.streaming.DataStreamWriter
 import org.apache.spark.sql.{DataFrame, DataFrameWriter, Dataset, Row, streaming}
 
 import scala.collection.mutable
 
+
 trait Flow {
 
-  def readData(): DataFrame
+  //def setSource(source : Source)
+  //def readData(flowSource: Source): DataFrame
   def compute(): DataFrame
   //def writeData[T <: AnyRef](): AnyRef
 
@@ -29,6 +32,10 @@ trait FinishedFlow extends Flow{
 }
 
 trait StreamingFlow extends Flow{
+
+  def setInputSource(streamSource: Source)
+
+  def setOutputSource(streamSource: Source)
 
   def writeData[DataStreamWriter[Row]](): org.apache.spark.sql.streaming.DataStreamWriter[Row]
 

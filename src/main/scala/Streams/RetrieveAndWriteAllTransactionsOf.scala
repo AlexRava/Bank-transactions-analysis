@@ -1,5 +1,6 @@
 package Streams
 import App.Application.spark
+import Sources.Source
 import org.apache.spark.sql.functions.{struct, to_json}
 import org.apache.spark.sql.{DataFrame, DataFrameWriter, Row}
 import org.apache.spark.sql.DataFrameWriter
@@ -7,9 +8,11 @@ import org.apache.spark.sql.streaming.DataStreamWriter
 import org.apache.spark.sql.cassandra._
 
 
-class RetrieveAllTransactionsOf(val user: String) extends FinishedFlow {
+class RetrieveAndWriteAllTransactionsOf(val user: String, val outputSource: Source) extends FinishedFlow {
 
   import spark.implicits._
+
+  // la tabella dove a a prendere le transazioni è embbeddata (?)
 
   override def readData(): DataFrame = spark
     .read
@@ -27,7 +30,7 @@ class RetrieveAllTransactionsOf(val user: String) extends FinishedFlow {
     .format("kafka")
     .option("kafka.bootstrap.servers", "localhost:9092")
     .option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
-    .option("topic", "allTransactions")
+    .option("topic", outputSource.topicSource)
   }
 
 

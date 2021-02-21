@@ -10,11 +10,15 @@ import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode}
 import org.apache.spark.sql.cassandra._
 
 
-object InputStream extends StreamingFlow {
+class InputStream(var inputSource: Source, var outputSource: Source) extends StreamingFlow {
 
   import spark.implicits._
 
-  override def readData(streamSource: Source) /*Dataset[Transaction]*/ = streamSource
+  override def setInputSource(streamSource: Source) = this.inputSource = streamSource
+
+  override def setOutputSource(streamSource: Source) = this.outputSource = streamSource
+
+  //private def readData()= this.inputSource.readFromSource()
 
   override def compute() =
     readData
@@ -31,8 +35,9 @@ object InputStream extends StreamingFlow {
     .outputMode(OutputMode.Update)
     .foreachBatch( retrieveDataforEachUsersInBatch )
 
+
   val retrieveDataforEachUsersInBatch =
-    (batchDF: DataFrame, batchId:Long) => batchDF.collect.foreach(userInARow => new RetrieveAllTransactionsOf(userInARow.mkString).startFlow())
+    (batchDF: DataFrame, batchId:Long) => batchDF.collect.foreach(userInARow => new RetrieveAndWriteAllTransactionsOf(userInARow.mkString, outputSource).startFlow())
 
 
 

@@ -1,5 +1,0 @@
-package Sources
-
-trait Source {
-
-}
