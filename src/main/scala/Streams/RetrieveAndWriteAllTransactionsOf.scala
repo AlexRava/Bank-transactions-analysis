@@ -1,22 +1,18 @@
 package Streams
 import App.Application.spark
-import Sources.Source
+import Sources.{BankCassandraSource, KafkaSource, Source}
 import org.apache.spark.sql.functions.{struct, to_json}
 import org.apache.spark.sql.{DataFrame, DataFrameWriter, Row}
-import org.apache.spark.sql.DataFrameWriter
-import org.apache.spark.sql.streaming.DataStreamWriter
 import org.apache.spark.sql.cassandra._
 
 
-class RetrieveAndWriteAllTransactionsOf(val user: String, val outputSource: Source) extends FinishedFlow {
+class RetrieveAndWriteAllTransactionsOf(val user: String, val dBSource: BankCassandraSource, val outputSource: KafkaSource) extends FinishedFlow {
 
   import spark.implicits._
 
-  // la tabella dove a a prendere le transazioni è embbeddata (?)
-
   override def readData(): DataFrame = spark
     .read
-    .cassandraFormat("transactions1","bank")
+    .cassandraFormat(dBSource.table ,dBSource.namespace)
     .load()
     .filter("uid = '" + this.user + "'")// 'where' is computed on Cassandra Server, not in spark ( ?? )
 
@@ -30,7 +26,7 @@ class RetrieveAndWriteAllTransactionsOf(val user: String, val outputSource: Sour
     .format("kafka")
     .option("kafka.bootstrap.servers", "localhost:9092")
     .option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
-    .option("topic", outputSource.topicSource)
+    .option("topic", outputSource.topic)
   }
 
 

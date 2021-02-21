@@ -11,7 +11,7 @@ trait Source{
   * A Kafka source of data, this abstraction represent a Kafka Topic.
   */
 trait KafkaSource extends Source{
-  override def sourceType: String = "TOPIC-KAFKA"
+  override def sourceType: String = "kafka"
   def topic:String
 }
 

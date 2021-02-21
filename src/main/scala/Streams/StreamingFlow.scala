@@ -12,6 +12,7 @@ trait Flow {
 
   //def setSource(source : Source)
   //def readData(flowSource: Source): DataFrame
+  def readData():DataFrame
   def compute(): DataFrame
   //def writeData[T <: AnyRef](): AnyRef
 
@@ -33,9 +34,9 @@ trait FinishedFlow extends Flow{
 
 trait StreamingFlow extends Flow{
 
-  def setInputSource(streamSource: Source)
+  /*def setInputSource(streamSource: Source)
 
-  def setOutputSource(streamSource: Source)
+  def setOutputSource(streamSource: Source)*/
 
   def writeData[DataStreamWriter[Row]](): org.apache.spark.sql.streaming.DataStreamWriter[Row]
 

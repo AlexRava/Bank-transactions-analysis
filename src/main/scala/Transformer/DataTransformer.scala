@@ -25,9 +25,7 @@ class DataTransformer extends StreamingFlowWithMultipleSources/*extends Transfor
   //var dataSources: mutable.Map[String,DataFrame] = mutable.HashMap()
   //override def setSource(dataSource: StreamingFlow) = this.dataSource = dataSource
   //override def setSource(dataSource: StreamingFlow*): Unit = this.dataSource. = dataSource
-
   //override def addSource(sourceName: String, dataSource: DataFrame) = this.dataSources.put(sourceName,dataSource)
-
   //deve essere incapusulato da qualche parte come mia strategia "non va bene prendere la testa, devo prendere l'input stream
   //private def mergeStream(mergeStrategy) = dataSources.merge(merge)get()
 

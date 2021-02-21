@@ -4,21 +4,26 @@ import App.Application.spark
 import Data.DataObject.{Transaction, TransactionFactory}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, streaming}
 import Data.DataObject
-import Sources.Source
+import Sources.CassandraSources.DbHistoricalData
+import Sources.{CassandraSource, KafkaSource, Source}
 import org.apache.spark.sql.functions.{struct, to_json}
 import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode}
 import org.apache.spark.sql.cassandra._
 
 
-class InputStream(var inputSource: Source, var outputSource: Source) extends StreamingFlow {
+class InputStream(var inputSource: KafkaSource, var outputSource: KafkaSource) extends StreamingFlow {
 
   import spark.implicits._
 
-  override def setInputSource(streamSource: Source) = this.inputSource = streamSource
+  //override def setInputSource(streamSource: Source) = this.inputSource = streamSource
+  //override def setOutputSource(streamSource: Source) = this.outputSource = streamSource
 
-  override def setOutputSource(streamSource: Source) = this.outputSource = streamSource
-
-  //private def readData()= this.inputSource.readFromSource()
+  override def readData() = spark
+    .readStream
+    .format(inputSource.sourceType)
+    .option("kafka.bootstrap.servers", "localhost:9092")
+    .option("subscribe", inputSource.topic)
+    .load()
 
   override def compute() =
     readData
@@ -30,16 +35,22 @@ class InputStream(var inputSource: Source, var outputSource: Source) extends Str
     .select($"*")
     .select($"uid")
 
-  override def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = compute
-    .writeStream
-    .outputMode(OutputMode.Update)
-    .foreachBatch( retrieveDataforEachUsersInBatch )
+  override def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = {
+    val retrieveDataforEachUsersInBatch =
+      (batchDF: DataFrame, batchId:Long) => batchDF.collect.foreach(
+          userInARow => new RetrieveAndWriteAllTransactionsOf(userInARow.mkString, DbHistoricalData , outputSource).startFlow()
+      )
+
+    compute()
+      .writeStream
+      .outputMode(OutputMode.Update)
+      .foreachBatch(retrieveDataforEachUsersInBatch)
+  }
 
 
-  val retrieveDataforEachUsersInBatch =
+  /*private val retrieveDataforEachUsersInBatch =
     (batchDF: DataFrame, batchId:Long) => batchDF.collect.foreach(userInARow => new RetrieveAndWriteAllTransactionsOf(userInARow.mkString, outputSource).startFlow())
-
-
+  */
 
   /*.read
 .cassandraFormat("transactions1","bank")
