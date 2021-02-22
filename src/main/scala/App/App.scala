@@ -43,9 +43,10 @@ object Application extends App {
 
   //RegisterTransactions.startFlow()
 
-  val transformer: StreamingFlowWithMultipleSources = new DataTransformer()
+  val transformer: StreamingFlowWithMultipleSources = new DataTransformer(AllTransactionSource)
+  transformer.addSource(InputSource)//, InputStream.readData())
+  transformer.addSource(AllTransactionSource)
 
-  transformer.addSource("INPUT_DATA", InputStream.readData())
   printStream(transformer)
 /*
   Predict.startFlow()

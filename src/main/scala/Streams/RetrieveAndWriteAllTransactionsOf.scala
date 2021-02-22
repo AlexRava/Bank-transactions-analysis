@@ -10,10 +10,10 @@ class RetrieveAndWriteAllTransactionsOf(val user: String, val dBSource: BankCass
 
   import spark.implicits._
 
-  override def readData(): DataFrame = spark
+  override def readData(): DataFrame = dBSource.readFromSource()/* spark
     .read
     .cassandraFormat(dBSource.table ,dBSource.namespace)
-    .load()
+    .load()*/
     .filter("uid = '" + this.user + "'")// 'where' is computed on Cassandra Server, not in spark ( ?? )
 
 

@@ -1,9 +1,12 @@
 package Streams
 
 import App.Application.spark
-import Sources.Source
+import Sources.{CassandraSource, KafkaSource, Source}
+import Streams.InputStream.inputSource
 import org.apache.spark.sql.streaming.DataStreamWriter
 import org.apache.spark.sql.{DataFrame, DataFrameWriter, Dataset, Row, streaming}
+import org.apache.spark.sql.cassandra._
+
 
 import scala.collection.mutable
 
@@ -12,7 +15,7 @@ trait Flow {
 
   //def setSource(source : Source)
   //def readData(flowSource: Source): DataFrame
-  def readData():DataFrame
+  //def readData():DataFrame
   def compute(): DataFrame
   //def writeData[T <: AnyRef](): AnyRef
 
@@ -48,7 +51,26 @@ trait MultipleSources /*extends StreamingFlow*/{
 
   var dataSources: mutable.Map[String,DataFrame] = mutable.HashMap()
 
-  def addSource(sourceName: String, dataSource: DataFrame) = this.dataSources.put(sourceName,dataSource)
+  def addSource(source: Source) = this.dataSources.put(source.name, source.readFromSource())
+  /*def addSource(source: Source/*, dataSource: DataFrame*/) = {
+    def readsource(source: Source) = source match {
+      case source: KafkaSource => spark
+      .readStream
+      .format(source.sourceType)
+      .option("kafka.bootstrap.servers", "localhost:9092")
+      .option("subscribe", source.topic)
+      .load()
+
+      case source: CassandraSource => spark
+      .read
+      .cassandraFormat(source.table ,source.namespace)
+      .load()
+    }
+
+    def sourceName(source:Source) = source match {}
+
+    this.dataSources.put(source.sourceType, readsource(source))
+  }*/
 
   def mergeSources(sources: mutable.Map[String,DataFrame]): DataFrame
 

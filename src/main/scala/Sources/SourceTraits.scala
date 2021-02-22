@@ -1,10 +1,16 @@
 package Sources
+import org.apache.spark.sql.cassandra._
+import App.Application.spark
+import org.apache.spark.sql.DataFrame
 
 /**
   * A very simple source of data, it could be specialized by a more specific source type.
+  * It's possible to read from a source of data
   */
 trait Source{
   def sourceType = "simple-source"
+  def name:String
+  def readFromSource(): DataFrame
 }
 
 /**
@@ -12,7 +18,16 @@ trait Source{
   */
 trait KafkaSource extends Source{
   override def sourceType: String = "kafka"
+  override def name = topic
+
   def topic:String
+
+  override def readFromSource(): DataFrame = spark
+      .readStream
+      .format(sourceType)
+      .option("kafka.bootstrap.servers", "localhost:9092")
+      .option("subscribe", topic)
+      .load()
 }
 
 /**
@@ -20,8 +35,15 @@ trait KafkaSource extends Source{
   */
 trait CassandraSource extends Source{
   override def sourceType: String = "DB-CASSANDRA"
+  override def name = namespace+"."+table
+
   def table:String
   def namespace:String
+
+  override def readFromSource(): DataFrame = spark
+    .read
+    .cassandraFormat(table , namespace)
+    .load()
 }
 
 /**

@@ -23,15 +23,15 @@ object InputStream extends StreamingFlow {
   //override def setInputSource(streamSource: Source) = this.inputSource = streamSource
   //override def setOutputSource(streamSource: Source) = this.outputSource = streamSource
 
-  override def readData() = spark
-    .readStream
+  //override def readData() = spark
+    /*.readStream
     .format(inputSource.sourceType)
     .option("kafka.bootstrap.servers", "localhost:9092")
     .option("subscribe", inputSource.topic)
-    .load()
+    .load()*/
 
   override def compute() =
-    readData
+    inputSource.readFromSource()
     .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
     .as[(String,String)]
     .map(_._2.split(",").toList)

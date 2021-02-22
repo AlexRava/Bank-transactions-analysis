@@ -1,14 +1,14 @@
 package Transformer
 
 import App.Application.spark
-import Data.DataObject.Transaction
 import Sources.CassandraSources.DbTransformedSource
-import Sources.KafkaSource
+import Sources.{KafkaSource, Source}
 import Streams.{RetrieveTransformedTransaction, StreamingFlow, StreamingFlowWithMultipleSources}
 import org.apache.spark.sql.{DataFrame, Row, streaming}
-import org.apache.spark.sql.functions.{struct, to_json}
 import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode, StreamingQuery}
 import Utility.{DataFrameOperation, MergeStrategy}
+import org.apache.spark.sql.cassandra._
+
 
 import scala.collection.mutable
 
@@ -26,7 +26,11 @@ class DataTransformer(var outputSource: KafkaSource) extends StreamingFlowWithMu
 
   def setMergeStrategy(strategy: (Map[String,DataFrame] => DataFrame) ) = this.mergeStrategy = strategy
 
+  override def addSource(sourceName: Source)//, dataSource: DataFrame): Option[DataFrame] = super.addSource(sourceName, dataSource)
+
   def mergeSources(): DataFrame = this.mergeStrategy(sources)
+
+
 
   // this.dataSources.get("INPUT_DATA").get
   //var dataSources: mutable.Map[String,DataFrame] = mutable.HashMap()
