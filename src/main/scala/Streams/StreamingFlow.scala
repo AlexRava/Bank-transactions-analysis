@@ -47,11 +47,18 @@ trait StreamingFlow extends Flow{
 
 }
 
-trait MultipleSources /*extends StreamingFlow*/{
+abstract class AbstractMultipleSources extends MultipleSources {
 
   var dataSources: mutable.Map[String,DataFrame] = mutable.HashMap()
 
-  def addSource(source: Source) = this.dataSources.put(source.name, source.readFromSource())
+  override def addSource(source: Source) = this.dataSources.put(source.name, source.readFromSource())
+  
+}
+
+trait MultipleSources /*extends StreamingFlow*/{
+
+  def addSource(source: Source)
+
   /*def addSource(source: Source/*, dataSource: DataFrame*/) = {
     def readsource(source: Source) = source match {
       case source: KafkaSource => spark

@@ -1,7 +1,7 @@
 package App
 
 import Data.DataObject.{Transaction, TransactionFactory}
-import Sources.KafkaSources.{AllTransactionSource, InputSource}
+import Sources.KafkaSources.{AllTransactionSource, InputSource, TransactionTransformedSource}
 import Streams.{InputStream, Predict, RegisterTransactions, StreamUtility, StreamingFlow, StreamingFlowWithMultipleSources}
 import Transformer.{DataTransformer, Transformer}
 import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
@@ -43,9 +43,10 @@ object Application extends App {
 
   //RegisterTransactions.startFlow()
 
-  val transformer: StreamingFlowWithMultipleSources = new DataTransformer(AllTransactionSource)
-  transformer.addSource(InputSource)//, InputStream.readData())
+  val transformer: StreamingFlowWithMultipleSources = new DataTransformer(TransactionTransformedSource)
+  transformer.addSource(InputSource)
   transformer.addSource(AllTransactionSource)
+  transformer.setMergeStrategy()
 
   printStream(transformer)
 /*

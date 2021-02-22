@@ -22,7 +22,6 @@ object InputStream extends StreamingFlow {
 
   //override def setInputSource(streamSource: Source) = this.inputSource = streamSource
   //override def setOutputSource(streamSource: Source) = this.outputSource = streamSource
-
   //override def readData() = spark
     /*.readStream
     .format(inputSource.sourceType)

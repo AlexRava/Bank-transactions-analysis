@@ -26,7 +26,7 @@ class DataTransformer(var outputSource: KafkaSource) extends StreamingFlowWithMu
 
   def setMergeStrategy(strategy: (Map[String,DataFrame] => DataFrame) ) = this.mergeStrategy = strategy
 
-  override def addSource(sourceName: Source)//, dataSource: DataFrame): Option[DataFrame] = super.addSource(sourceName, dataSource)
+  //override def addSource(sourceName: Source)//, dataSource: DataFrame): Option[DataFrame] = super.addSource(sourceName, dataSource)
 
   def mergeSources(): DataFrame = this.mergeStrategy(sources)
 
