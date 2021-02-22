@@ -39,6 +39,7 @@ object Application extends App {
   //input.startFlow()
 
   InputStream.startFlow()
+  //StreamUtility.printInStdOut(InputSource.readFromSource())
 
 /*  //RegisterTransactions.startFlow()
   val transformer: StreamingFlowWithMultipleSources = new DataTransformer(TransactionTransformedSource)
