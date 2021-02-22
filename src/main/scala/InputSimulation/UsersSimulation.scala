@@ -3,6 +3,7 @@ package InputSimulation
 import java.io.File
 import java.util.Properties
 
+import Sources.KafkaSources.InputSource
 import com.github.tototoshi.csv.CSVReader
 import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerRecord}
 
@@ -48,7 +49,7 @@ object UsersSimulation extends Simulation[Seq[String]]{
 
     //HO IL DUBBIO CHE LA VIRGOLA CHE METTO QUI L HO DECISA IO E NON è DEL CSV!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     source.getDataStream().foreach(transaction => {
-      producer.send(new ProducerRecord[String,String]("input-topic", transaction.mkString(source.dataSeparator)))
+      producer.send(new ProducerRecord[String,String](InputSource.topic, transaction.mkString(source.dataSeparator)))
       Thread.sleep(waitingTime)
       //println("prova",transaction.getClass.getDeclaredFields.map(_.getName).
       //classOf[Transaction].getDeclaredFields.map{ f => f.setAccessible(true) val res = (f.getName, f.get(u)) f.setAccessible(false) res }

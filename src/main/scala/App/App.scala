@@ -35,23 +35,20 @@ object Application extends App {
     .config(conf)
     .getOrCreate()
 
-
-
   //var input = new InputStream(InputSource, AllTransactionSource) //fare una factory settando le source
   //input.startFlow()
 
   InputStream.startFlow()
 
-  //RegisterTransactions.startFlow()
-
+/*  //RegisterTransactions.startFlow()
   val transformer: StreamingFlowWithMultipleSources = new DataTransformer(TransactionTransformedSource)
   transformer.addSource(InputSource)
   transformer.addSource(AllTransactionSource)
   transformer.setMergeStrategy(_.get(InputSource.name).get) //transformer with a simple strategy
-
   //transformer.setMergeStrategy(MergeStrategy.simpleStrategy(_))
 
-  printStream(transformer)
+
+  printStream(transformer)*/
 /*
   Predict.startFlow()
 
