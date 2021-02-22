@@ -5,17 +5,23 @@ import org.apache.spark.sql.{DataFrame, Row, streaming}
 
 object Predict extends StreamingFlow {
 
+
   import spark.implicits._
 
-  override def readData(): DataFrame = spark
+  /*override def readData(): DataFrame = spark
     .readStream
     .format("kafka")
     .option("kafka.bootstrap.servers", "localhost:9092")
     .option("subscribe", "transaction-transformed")
     .load()
+*/
 
-
-  override def compute(): DataFrame = readData()
+  override def compute(): DataFrame =  spark
+    .readStream
+    .format("kafka")
+    .option("kafka.bootstrap.servers", "localhost:9092")
+    .option("subscribe", "transaction-transformed")
+    .load()
 
 
   override def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = compute

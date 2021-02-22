@@ -4,6 +4,7 @@ import Data.DataObject.{Transaction, TransactionFactory}
 import Sources.KafkaSources.{AllTransactionSource, InputSource, TransactionTransformedSource}
 import Streams.{InputStream, Predict, RegisterTransactions, StreamUtility, StreamingFlow, StreamingFlowWithMultipleSources}
 import Transformer.{DataTransformer, Transformer}
+import Utility.MergeStrategy
 import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
 import org.apache.spark.sql.cassandra._
 import org.apache.log4j.{Level, Logger}
@@ -46,7 +47,9 @@ object Application extends App {
   val transformer: StreamingFlowWithMultipleSources = new DataTransformer(TransactionTransformedSource)
   transformer.addSource(InputSource)
   transformer.addSource(AllTransactionSource)
-  transformer.setMergeStrategy()
+  transformer.setMergeStrategy(_.get(InputSource.name).get) //transformer with a simple strategy
+
+  //transformer.setMergeStrategy(MergeStrategy.simpleStrategy(_))
 
   printStream(transformer)
 /*

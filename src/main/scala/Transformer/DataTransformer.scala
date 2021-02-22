@@ -21,15 +21,14 @@ class DataTransformer(var outputSource: KafkaSource) extends StreamingFlowWithMu
   import spark.implicits._
   import DataFrameOperation.ImplicitsDataFrameCustomOperation
 
-  var mergeStrategy : Map[String,DataFrame] => DataFrame
-  var sources: Map[String,DataFrame]
+  var sources: mutable.Map[String,DataFrame] = mutable.HashMap()
 
-  def setMergeStrategy(strategy: (Map[String,DataFrame] => DataFrame) ) = this.mergeStrategy = strategy
+  override def addSource(source: Source) = this.sources.put(source.name,source.readFromSource())
 
-  //override def addSource(sourceName: Source)//, dataSource: DataFrame): Option[DataFrame] = super.addSource(sourceName, dataSource)
+  //override def setMergeStrategy(strategy: (Map[String,DataFrame] => DataFrame) ) = this.mergeStrategy = strategy
+  //override var mergeStrategy : Map[String,DataFrame] => DataFrame
 
   def mergeSources(): DataFrame = this.mergeStrategy(sources)
-
 
 
   // this.dataSources.get("INPUT_DATA").get
@@ -40,9 +39,9 @@ class DataTransformer(var outputSource: KafkaSource) extends StreamingFlowWithMu
   //deve essere incapusulato da qualche parte come mia strategia "non va bene prendere la testa, devo prendere l'input stream
   //private def mergeStream(mergeStrategy) = dataSources.merge(merge)get()
 
-  override def readData() = mergeSources(this.dataSources)
+  //override def readData() = mergeSources(this.dataSources)
 
-  override def compute() = readData()
+  override def compute() = mergeSources()
     .customOperation()
 
 
@@ -57,6 +56,4 @@ class DataTransformer(var outputSource: KafkaSource) extends StreamingFlowWithMu
       .outputMode(OutputMode.Update)
       .foreachBatch(retrieveTrasformedDataFromDb)
   }
-
-  override def mergeSources(sources: mutable.Map[String, DataFrame]): DataFrame = ???
 }

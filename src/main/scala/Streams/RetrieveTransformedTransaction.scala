@@ -14,12 +14,12 @@ class RetrieveTransformedTransaction(val user: String,
 
   import spark.implicits._
 
-  override def readData(): DataFrame = spark
+  /*override def readData(): DataFrame = spark
     .read
     .cassandraFormat(dBSource.table, dBSource.namespace)
-    .load()
+    .load()*/
 
-  override def compute(): DataFrame = readData()
+  override def compute(): DataFrame = dBSource.readFromSource()
     .filter("uid = '" + user.mkString + "'") // 'where' is computed on Cassandra Server, not in spark ( ?? )
     .select($"uid" as "key", to_json(struct($"*")) as "value")
 

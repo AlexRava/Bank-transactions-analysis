@@ -7,7 +7,6 @@ import org.apache.spark.sql.streaming.DataStreamWriter
 import org.apache.spark.sql.{DataFrame, DataFrameWriter, Dataset, Row, streaming}
 import org.apache.spark.sql.cassandra._
 
-
 import scala.collection.mutable
 
 
@@ -46,18 +45,22 @@ trait StreamingFlow extends Flow{
   override def startFlow() = writeData.start()
 
 }
-
+/*
 abstract class AbstractMultipleSources extends MultipleSources {
 
   var dataSources: mutable.Map[String,DataFrame] = mutable.HashMap()
 
   override def addSource(source: Source) = this.dataSources.put(source.name, source.readFromSource())
-  
-}
+
+}*/
 
 trait MultipleSources /*extends StreamingFlow*/{
 
   def addSource(source: Source)
+
+  var mergeStrategy: mutable.Map[String,DataFrame] => DataFrame = _
+
+  def setMergeStrategy(strategy: mutable.Map[String,DataFrame] => DataFrame ) = mergeStrategy = strategy
 
   /*def addSource(source: Source/*, dataSource: DataFrame*/) = {
     def readsource(source: Source) = source match {
@@ -79,7 +82,7 @@ trait MultipleSources /*extends StreamingFlow*/{
     this.dataSources.put(source.sourceType, readsource(source))
   }*/
 
-  def mergeSources(sources: mutable.Map[String,DataFrame]): DataFrame
+  //def mergeSources(sources: mutable.Map[String,DataFrame]): DataFrame
 
 }
 

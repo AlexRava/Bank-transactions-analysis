@@ -10,7 +10,7 @@ class RetrievePrediction(val user: String, val transactionId: String) extends Fi
 
   import spark.implicits._
 
-  override def readData(): DataFrame = spark
+  def readData(): DataFrame = spark
     .read
     .cassandraFormat("prediction", "bank")
     .load()
