@@ -1,6 +1,7 @@
 package App
 
 import Data.DataObject.{Transaction, TransactionFactory}
+import Monitor.SystemMonitor
 import Sources.KafkaSources.{AllTransactionSource, InputSource, TransactionTransformedSource}
 import Streams.{InputStream, Predict, RegisterTransactions, StreamUtility, StreamingFlow, StreamingFlowWithMultipleSources}
 import Transformer.{DataTransformer, Transformer}
@@ -35,21 +36,28 @@ object Application extends App {
     .config(conf)
     .getOrCreate()
 
+  var monitor = SystemMonitor
+
   //var input = new InputStream(InputSource, AllTransactionSource) //fare una factory settando le source
   //input.startFlow()
 
   InputStream.startFlow()
+  //monitor.monitorInput()
+  //monitor.monitorAllTransactions()
+
+
   //StreamUtility.printInStdOut(InputSource.readFromSource())
 
-/*  //RegisterTransactions.startFlow()
+ //RegisterTransactions.startFlow()
   val transformer: StreamingFlowWithMultipleSources = new DataTransformer(TransactionTransformedSource)
   transformer.addSource(InputSource)
   transformer.addSource(AllTransactionSource)
-  transformer.setMergeStrategy(_.get(InputSource.name).get) //transformer with a simple strategy
+  transformer.setMergeStrategy(_.get(InputSource.name).get) //transformer with a simple strategy*/
   //transformer.setMergeStrategy(MergeStrategy.simpleStrategy(_))
+  monitor.monitorTransactionTransformed()
 
 
-  printStream(transformer)*/
+  //printStream(transformer)
 /*
   Predict.startFlow()
 

@@ -5,7 +5,7 @@ import Sources.KafkaSources.{AllTransactionSource, InputSource, PredictionSource
 
 
 /**
-  * Due to a SystemMonitor, it is possible to choose a particular topic and monitor it.
+  * Due to a SystemMonitor, it is possible to choose a particular topic and monitoring it.
   */
 trait SystemMonitor {
 
@@ -26,34 +26,8 @@ trait SystemMonitor {
     monitorPredictions()
   }
 }
-/*
-object StartMonitoring {
 
-  def monitorInput() ={
-
-  }
-
-  def monitorAllTransactions() = {
-
-  }
-
-  def monitorTransactionTransformed() = {
-
-  }
-
-  def monitorPredictions() = {
-
-  }
-
-  def monitorAll() ={
-
-  }
-  println(InputSource.readFromSource())
-  //MonitorTopic.fromTopicSource(InputSource).printData()
-
-
-  var allTransactionsTopic = MonitorTopic.fromTopicSource(AllTransactionSource)
-  var transactionTransformedTopic = MonitorTopic.fromTopicSource(TransactionTransformedSource)
-  var predictionTopic = MonitorTopic.fromTopicSource(PredictionSource)
-}
-*/
+/**
+  * Abstraction for monitoring the system.
+  */
+object SystemMonitor extends SystemMonitor
