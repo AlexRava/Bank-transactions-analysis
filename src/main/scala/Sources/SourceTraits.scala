@@ -39,6 +39,7 @@ trait CassandraSource extends Source{
 
   def table:String
   def namespace:String
+  def col:String
 
   override def readFromSource(): DataFrame = spark
     .read
@@ -50,7 +51,8 @@ trait CassandraSource extends Source{
   * An abstraction of a CassandraSource that represent the correct working space inside Cassandra.
   */
 trait BankCassandraSource extends CassandraSource{
-  override def namespace: String = "bank"
+  override def namespace: String = "bank1"
+
 }
 
 /**

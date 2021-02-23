@@ -7,7 +7,7 @@ trait CustomFeature{
   def computeNewFeature(computation: DataFrame => DataFrame): DataFrame
 }
 
-trait AddFeatures extends CustomFeature {
+trait DefinedFeature extends CustomFeature {
 
 
   def addColHabitualBehaviour():DataFrame
@@ -21,7 +21,7 @@ trait Prediction{
 
 object DataFrameExtension {
 
-  implicit class ImplicitsDataFrameCustomOperation(base: DataFrame) extends AddFeatures {
+  implicit class ImplicitsDataFrameCustomOperation(base: DataFrame) extends DefinedFeature {
 
     override def computeNewFeature(computation: DataFrame => DataFrame): DataFrame = computation(base)
 
