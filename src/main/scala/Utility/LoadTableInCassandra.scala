@@ -3,10 +3,8 @@ package Utility
 import java.io.File
 import java.util.Properties
 
-import App.Application.spark
-import Data.DataObject.{Transaction, TransactionFactory, TransactionTransformed}
+import Data.DataObject.{TransactionFactory}
 import SinkConnector.{CassandraSink, CassandraSinkTransformed}
-import Streams.StreamUtility
 import com.github.tototoshi.csv.CSVReader
 import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerRecord}
 import org.apache.log4j.{Level, Logger}

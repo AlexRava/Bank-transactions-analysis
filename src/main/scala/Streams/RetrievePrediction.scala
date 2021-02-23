@@ -6,7 +6,7 @@ import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.sql.cassandra._
 
 
-class RetrievePrediction(val user: String, val transactionId: String) extends FinishedFlow {
+class RetrievePrediction(val user: String, val transactionId: String) extends AbstractFinishedFlow {
 
   import spark.implicits._
 
@@ -15,11 +15,11 @@ class RetrievePrediction(val user: String, val transactionId: String) extends Fi
     .cassandraFormat("prediction", "bank")
     .load()
 
-  override def compute(): DataFrame = readData()
+  override protected def compute(): DataFrame = readData()
     .filter("uid = '" + user + "'") // 'where' is computed on Cassandra Server, not in spark ( ?? )
     .select($"uid" as "key", to_json(struct($"*")) as "value")
 
-  override def writeData[DataFrameWriter[Row]](): sql.DataFrameWriter[Row] = compute()
+  override protected def writeData[DataFrameWriter[Row]](): sql.DataFrameWriter[Row] = compute()
     .write
     .format("kafka")
     .option("kafka.bootstrap.servers", "localhost:9092")

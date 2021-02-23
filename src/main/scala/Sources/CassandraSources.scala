@@ -25,7 +25,7 @@ object CassandraSources {
     * Thank's to this Cassandra source abstractions, it is possible to
     * reference a table where are stored all the transformed transactions.
     */
-  object DbTransformedSource extends SimulationCassandraSource{
+  object DbTransformed extends SimulationCassandraSource{
     override def table: String = "transformed"
   }
 

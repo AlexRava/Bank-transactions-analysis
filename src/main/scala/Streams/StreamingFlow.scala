@@ -9,38 +9,41 @@ import org.apache.spark.sql.cassandra._
 
 import scala.collection.mutable
 
-
-trait Flow {
-
-  //def setSource(source : Source)
-  //def readData(flowSource: Source): DataFrame
-  //def readData():DataFrame
-  def compute(): DataFrame
-  //def writeData[T <: AnyRef](): AnyRef
-
-  //def writeData [T]():T
-  //def writeData[Any]():Any
+trait Flow{
 
   def startFlow()
 
 }
 
-trait FinishedFlow extends Flow{
+abstract class AbstractFlow extends Flow{
 
-  def writeData[DataFrameWriter[Row]](): org.apache.spark.sql.DataFrameWriter[Row]
+  //def setSource(source : Source)
+  //def readData(flowSource: Source): DataFrame
+  //def readData():DataFrame
+  protected def compute(): DataFrame
 
-  override def startFlow() = writeData.save()
 
+  //def writeData[T <: AnyRef](): AnyRef
+
+  //def writeData [T]():T
+  //def writeData[Any]():Any
+  //def startFlow()
 
 }
 
-trait StreamingFlow extends Flow{
+abstract class AbstractFinishedFlow extends AbstractFlow{
 
-  /*def setInputSource(streamSource: Source)
+  //override type writer = org.apache.spark.sql.DataFrameWriter[Row]
 
-  def setOutputSource(streamSource: Source)*/
+  protected def writeData[DataFrameWriter[Row]](): org.apache.spark.sql.DataFrameWriter[Row]
 
-  def writeData[DataStreamWriter[Row]](): org.apache.spark.sql.streaming.DataStreamWriter[Row]
+  override def startFlow() = writeData.save()
+
+}
+
+abstract class AbstractStreamingFlow extends AbstractFlow{
+
+  protected def writeData[DataStreamWriter[Row]](): org.apache.spark.sql.streaming.DataStreamWriter[Row]
 
   override def startFlow() = writeData.start()
 
@@ -54,13 +57,16 @@ abstract class AbstractMultipleSources extends MultipleSources {
 
 }*/
 
-trait MultipleSources /*extends StreamingFlow*/{
+/**
+  * `Something` with multiple sources
+  */
+trait MultipleSources {
+
+  //var mergeStrategy: mutable.Map[String,DataFrame] => DataFrame = _
 
   def addSource(source: Source)
 
-  var mergeStrategy: mutable.Map[String,DataFrame] => DataFrame = _
-
-  def setMergeStrategy(strategy: mutable.Map[String,DataFrame] => DataFrame ) = mergeStrategy = strategy
+  def setMergeStrategy(strategy: mutable.Map[String,DataFrame] => DataFrame ) /*= mergeStrategy = strategy*/
 
   /*def addSource(source: Source/*, dataSource: DataFrame*/) = {
     def readsource(source: Source) = source match {
@@ -86,6 +92,6 @@ trait MultipleSources /*extends StreamingFlow*/{
 
 }
 
-trait StreamingFlowWithMultipleSources extends StreamingFlow with MultipleSources
+//trait StreamingFlowWithMultipleSources extends StreamingFlow with MultipleSources
 
 

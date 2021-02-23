@@ -13,7 +13,7 @@ import org.apache.spark.sql.cassandra._
 
 
 //class InputStream(var inputSource: KafkaSource, var outputSource: KafkaSource) extends StreamingFlow {
-object InputStream extends StreamingFlow {
+object InputStream extends AbstractStreamingFlow {
 
   val inputSource: KafkaSource = InputSource
   val outputSource: KafkaSource = AllTransactionSource
@@ -29,7 +29,7 @@ object InputStream extends StreamingFlow {
     .option("subscribe", inputSource.topic)
     .load()*/
 
-  override def compute() =
+  override protected def compute() =
     inputSource.readFromSource()
     .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
     .as[(String,String)]
@@ -39,8 +39,10 @@ object InputStream extends StreamingFlow {
     .select($"*")
     .select($"uid")
 
-  override def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = {
-    val retrieveDataforEachUsersInBatch =
+  override protected def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = {
+  //override def writeData[writer](): writer = {
+
+      val retrieveDataforEachUsersInBatch =
       (batchDF: DataFrame, batchId:Long) => batchDF.collect.foreach(
           userInARow => new RetrieveAndWriteAllTransactionsOf(userInARow.mkString, DbHistoricalData , outputSource).startFlow()
       )

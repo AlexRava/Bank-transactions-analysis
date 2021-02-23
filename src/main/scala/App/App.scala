@@ -49,12 +49,15 @@ object Application extends App {
   //StreamUtility.printInStdOut(InputSource.readFromSource())
 
  //RegisterTransactions.startFlow()
-  val transformer: StreamingFlowWithMultipleSources = new DataTransformer(TransactionTransformedSource)
-  transformer.addSource(InputSource)
-  transformer.addSource(AllTransactionSource)
-  transformer.setMergeStrategy(_.get(InputSource.name).get) //transformer with a simple strategy*/
+  //val transformer: StreamingFlowWithMultipleSources = new DataTransformer(TransactionTransformedSource)
+  DataTransformer.addSource(InputSource)
+  DataTransformer.addSource(AllTransactionSource)
+  DataTransformer.setMergeStrategy(_.get(InputSource.name).get) //transformer with a simple strategy*/
   //transformer.setMergeStrategy(MergeStrategy.simpleStrategy(_))
-  monitor.monitorTransactionTransformed()
+  //monitor.monitorTransactionTransformed()
+
+  Predict.startFlow()
+
 
 
   //printStream(transformer)

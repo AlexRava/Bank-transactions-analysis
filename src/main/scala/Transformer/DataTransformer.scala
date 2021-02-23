@@ -1,34 +1,32 @@
 package Transformer
 
 import App.Application.spark
-import Sources.CassandraSources.DbTransformedSource
+import Sources.CassandraSources.DbTransformed
+import Sources.KafkaSources.TransactionTransformedSource
 import Sources.{KafkaSource, Source}
-import Streams.{RetrieveTransformedTransaction, StreamingFlow, StreamingFlowWithMultipleSources}
+import Streams.{AbstractFlow, AbstractStreamingFlow, MultipleSources, RetrieveTransformedTransaction, StreamingFlow, StreamingFlowWithMultipleSources}
 import org.apache.spark.sql.{DataFrame, Row, streaming}
 import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode, StreamingQuery}
-import Utility.{DataFrameOperation, MergeStrategy}
+import Utility.MergeStrategy
 import org.apache.spark.sql.cassandra._
-
 
 import scala.collection.mutable
 
-trait Transformer{
-  def addSource(sourceName: String, dataSource: DataFrame)
-}
-
-class DataTransformer(var outputSource: KafkaSource) extends StreamingFlowWithMultipleSources/*extends Transformer with StreamingFlow*/ {
+//class DataTransformer(var outputSource: KafkaSource) extends StreamingFlowWithMultipleSources/*extends Transformer with StreamingFlow*/ {
+object DataTransformer extends AbstractStreamingFlow with MultipleSources{
 
   import spark.implicits._
-  import DataFrameOperation.ImplicitsDataFrameCustomOperation
+  import Utility.DataFrameExtension.ImplicitsDataFrameCustomOperation
 
   var sources: mutable.Map[String,DataFrame] = mutable.HashMap()
+  var outputSource: KafkaSource = TransactionTransformedSource
+  var mergeStrategy: mutable.Map[String,DataFrame] => DataFrame = _
 
-  override def addSource(source: Source) = this.sources.put(source.name,source.readFromSource())
+  override def addSource(source: Source) = sources.put(source.name,source.readFromSource())
 
-  //override def setMergeStrategy(strategy: (Map[String,DataFrame] => DataFrame) ) = this.mergeStrategy = strategy
-  //override var mergeStrategy : Map[String,DataFrame] => DataFrame
+  override def setMergeStrategy(strategy: (mutable.Map[String,DataFrame] => DataFrame) ) = mergeStrategy = strategy
 
-  def mergeSources(): DataFrame = this.mergeStrategy(sources)
+  //private def mergeSources(): DataFrame = mergeStrategy(sources)
 
 
   // this.dataSources.get("INPUT_DATA").get
@@ -41,14 +39,14 @@ class DataTransformer(var outputSource: KafkaSource) extends StreamingFlowWithMu
 
   //override def readData() = mergeSources(this.dataSources)
 
-  override def compute() = mergeSources()
-    .customOperation()
+  override protected def compute() = mergeStrategy(sources)
+    .addColHabitualBehaviour()
 
 
-  override def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = {
+  override protected def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = {
     val retrieveTrasformedDataFromDb =
       (batchDF: DataFrame, batchId: Long) => batchDF.collect.foreach(
-        user => new RetrieveTransformedTransaction(user.mkString, "ID", DbTransformedSource, outputSource).startFlow()) // ADD TRANSACTION ID
+        user => new RetrieveTransformedTransaction(user.mkString, "ID", DbTransformed, outputSource).startFlow()) // ADD TRANSACTION ID
 
     compute
       .select($"uid") // ADD TRANSACTION ID
