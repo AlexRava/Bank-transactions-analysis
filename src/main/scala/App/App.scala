@@ -3,9 +3,8 @@ package App
 import Data.DataObject.{Transaction, TransactionFactory}
 import Monitor.SystemMonitor
 import Sources.KafkaSources.{AllTransactionSource, InputSource, TransactionTransformedSource}
-import Streams.{InputStream, Predict, RegisterTransactions, StreamUtility, StreamingFlow, StreamingFlowWithMultipleSources}
-import Transformer.{DataTransformer, Transformer}
-import Utility.MergeStrategy
+import Streams.{DataTransformer, InputStream, Predict, RegisterTransactions, StreamingFlow, StreamingFlowWithMultipleSources}
+import Utility.{MergeStrategy, StreamUtility}
 import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
 import org.apache.spark.sql.cassandra._
 import org.apache.log4j.{Level, Logger}

@@ -3,9 +3,9 @@ package Utility
 import java.io.File
 import java.util.Properties
 
-import Data.{DataFactory, Transaction, TransactionTransformed, Prediction}
+import Data.{DataFactory, Prediction, Transaction, TransactionTransformed}
 import SinkConnector.{CassandraSink, SinkPrediction, SinkTransaction, SinkTransformed}
-import Sources.BankCassandraSource
+import Sources.{BankCassandraSource, CassandraSource}
 import Utility.LoadTableInCassandra._
 import com.github.tototoshi.csv.CSVReader
 import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerRecord}
@@ -27,7 +27,7 @@ object LoadTableUtility {
     .map(_._2.split(",").toList)
 
 
-  def readData(path : String, props: Properties)= {
+  def readData(path : String)= {
     val producer: Producer[String, String] = new KafkaProducer(props)
     val reader = CSVReader.open(new File(path))
     reader.foreach(transaction => {
@@ -35,21 +35,21 @@ object LoadTableUtility {
     })
   }
 
-  def loadBankTransactions(source : BankCassandraSource) = readKafkaTopic()
+  def loadBankTransactions(source : CassandraSource) = readKafkaTopic()
     .map(DataFactory.createTransaction(_))
     .writeStream
     .outputMode(OutputMode.Append)
     .foreach((new SinkTransaction(source)).asInstanceOf[ForeachWriter[Transaction]])
     .start()
 
-  def loadSimulationTransformed(source : BankCassandraSource) = readKafkaTopic()
+  def loadSimulationTransformed(source : CassandraSource) = readKafkaTopic()
       .map(DataFactory.createTransactionTransformed(_))
       .writeStream
       .outputMode(OutputMode.Append)
       .foreach((new SinkTransaction(source)).asInstanceOf[ForeachWriter[TransactionTransformed]])
       .start()
 
-  def loadSimulationPrediction(source : BankCassandraSource) = readKafkaTopic()
+  def loadSimulationPrediction(source : CassandraSource) = readKafkaTopic()
     .map(DataFactory.createPrediction(_))
     .writeStream
     .outputMode(OutputMode.Append)

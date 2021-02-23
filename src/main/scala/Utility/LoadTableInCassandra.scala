@@ -4,7 +4,7 @@ import java.io.File
 import java.util.Properties
 
 import SinkConnector.{CassandraSink, SinkTransformed}
-import Sources.CassandraSources.DbHistoricalData
+import Sources.CassandraSources.{DbHistoricalData, DbPrediction, DbResult, DbTransformed}
 import Utility.LoadTableUtility._
 import com.github.tototoshi.csv.CSVReader
 import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerRecord}
@@ -34,7 +34,7 @@ object LoadTableInCassandra extends App{
     .config(conf)
     .getOrCreate()
 
-  private val props: Properties = new Properties()
+  val props: Properties = new Properties()
   props.put("bootstrap.servers", "localhost:9092")
   props.put("acks", "all")
   props.put("retries", "0")
@@ -42,30 +42,19 @@ object LoadTableInCassandra extends App{
   props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
   props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
 
-
-
-
-
-
-
-
-  Thread.sleep(2000)
-
-
   val pathForTransactions = "C:\\Users\\Alex\\Desktop\\Fraud_Historical_data\\test_transformed.csv"
-  val source1 =
+  readData(pathForTransactions)
+  loadBankTransactions(DbHistoricalData)
 
-  val pathForResults = ""
-  val source2 =
 
-  val pathForTransformed =""
-  val source3 =
+  val pathForTransformed = ""
+  readData(pathForTransformed)
+  loadSimulationTransformed(DbTransformed)
+
 
   val pathForPrediction = ""
-  val source4 =
-
-
-  readData(pathForTransactions, )
+  readData(pathForPrediction)
+  loadSimulationPrediction(DbPrediction)
 
   spark.streams.awaitAnyTermination()
 }

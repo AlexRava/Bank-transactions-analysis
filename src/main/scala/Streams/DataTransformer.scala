@@ -1,22 +1,19 @@
-package Transformer
+package Streams
 
 import App.Application.spark
 import Sources.CassandraSources.DbTransformed
 import Sources.KafkaSources.TransactionTransformedSource
 import Sources.{KafkaSource, Source}
-import Streams.{AbstractFlow, AbstractStreamingFlow, MultipleSources, RetrieveTransformedTransaction, StreamingFlow, StreamingFlowWithMultipleSources}
+import org.apache.spark.sql.streaming.OutputMode
 import org.apache.spark.sql.{DataFrame, Row, streaming}
-import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode, StreamingQuery}
-import Utility.MergeStrategy
-import org.apache.spark.sql.cassandra._
 
 import scala.collection.mutable
 
 //class DataTransformer(var outputSource: KafkaSource) extends StreamingFlowWithMultipleSources/*extends Transformer with StreamingFlow*/ {
 object DataTransformer extends AbstractStreamingFlow with MultipleSources{
 
-  import spark.implicits._
   import Utility.DataFrameExtension.ImplicitsDataFrameCustomOperation
+  import spark.implicits._
 
   var sources: mutable.Map[String,DataFrame] = mutable.HashMap()
   var outputSource: KafkaSource = TransactionTransformedSource

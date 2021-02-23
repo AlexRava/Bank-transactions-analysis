@@ -1,7 +1,7 @@
 package Monitor
 
 import Sources.KafkaSource
-import Streams.{StreamUtility}
+import Utility.StreamUtility
 
 /**
   * Thank's to this abstraction it's possible to monitor a Topic
