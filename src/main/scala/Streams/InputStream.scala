@@ -1,9 +1,8 @@
 package Streams
 
 import App.Application.spark
-import Data.DataObject.{Transaction, TransactionFactory}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, streaming}
-import Data.DataObject
+import Data.{DataFactory}
 import Sources.CassandraSources.DbHistoricalData
 import Sources.KafkaSources.{AllTransactionSource, InputSource}
 import Sources.{CassandraSource, KafkaSource, Source}
@@ -35,7 +34,7 @@ object InputStream extends AbstractStreamingFlow {
     .as[(String,String)]
     .map(_._2.split(",").toList)
     //.map(_.asInstanceOf[TransactionSerialized]) //non funziona perche lo split da in output una lista e non una tupla
-    .map(TransactionFactory.createTransaction(_))
+    .map(DataFactory.createTransaction(_))
     .select($"*")
     .select($"uid")
 
