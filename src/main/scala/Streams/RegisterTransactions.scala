@@ -1,23 +1,20 @@
 package Streams
 
-import App.Application.spark
-import Data.DataObject.Transaction
-import SinkConnector.CassandraSink
-import Sources.KafkaSource
+import SinkConnector.{CassandraSink, SinkTransaction}
+import Sources.CassandraSources.DbHistoricalData
+import Sources.{CassandraSource, KafkaSource}
 import Sources.KafkaSources.InputSource
-import org.apache.spark.sql.{DataFrame, Row, streaming}
+import org.apache.spark.sql.{DataFrame, ForeachWriter, Row, streaming}
 
 object RegisterTransactions extends AbstractStreamingFlow {
 
   var inputSource: KafkaSource = InputSource
-  import spark.implicits._
-
-  //override def readData(): DataFrame = InputStream.readData()
+  var outputSource: CassandraSource = DbHistoricalData
 
   override protected def compute(): DataFrame = inputSource.readFromSource()
 
   override protected def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = compute()
     .writeStream
     .outputMode("update")
-    .foreach(new CassandraSink())
+    .foreach(new SinkTransaction(outputSource).asInstanceOf[ForeachWriter[Row]])
 }
