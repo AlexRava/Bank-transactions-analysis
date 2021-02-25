@@ -35,7 +35,7 @@ object InputStream extends AbstractStreamingFlow {
     .map(_._2.split(",").toList)
     //.map(_.asInstanceOf[TransactionSerialized]) //non funziona perche lo split da in output una lista e non una tupla
     .map(DataFactory.createTransaction(_))
-    .select($"*")
+    //.select($"*")
     .select($"uid")
 
   override protected def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = {

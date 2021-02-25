@@ -1,9 +1,8 @@
 package App
 
-import Data.DataObject.{Transaction, TransactionFactory}
 import Monitor.SystemMonitor
 import Sources.KafkaSources.{AllTransactionSource, InputSource, TransactionTransformedSource}
-import Streams.{DataTransformer, InputStream, Predict, RegisterTransactions, StreamingFlow, StreamingFlowWithMultipleSources}
+import Streams.{DataTransformer, InputStream, Predict, RegisterTransactions}
 import Utility.{MergeStrategy, StreamUtility}
 import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
 import org.apache.spark.sql.cassandra._
@@ -18,7 +17,6 @@ import org.apache.spark.sql.functions._
 
 object Application extends App {
 
-  def printStream(stream: StreamingFlow) = StreamUtility.printInStdOut(stream.compute())
   def printStream(stream: DataFrame) = StreamUtility.printInStdOut(stream)
 
   Logger.getLogger("org").setLevel(Level.ERROR)
@@ -42,20 +40,18 @@ object Application extends App {
 
   InputStream.startFlow()
   //monitor.monitorInput()
-  //monitor.monitorAllTransactions()
+  //monitor.monitorAllTransactions() //InputStream write on AllTransactions Source
 
 
-  //StreamUtility.printInStdOut(InputSource.readFromSource())
-
- //RegisterTransactions.startFlow()
+  RegisterTransactions.startFlow()
   //val transformer: StreamingFlowWithMultipleSources = new DataTransformer(TransactionTransformedSource)
-  DataTransformer.addSource(InputSource)
+  /*DataTransformer.addSource(InputSource)
   DataTransformer.addSource(AllTransactionSource)
-  DataTransformer.setMergeStrategy(_.get(InputSource.name).get) //transformer with a simple strategy*/
+  DataTransformer.setMergeStrategy(_.get(InputSource.name).get) *///transformer with a simple strategy*/
   //transformer.setMergeStrategy(MergeStrategy.simpleStrategy(_))
   //monitor.monitorTransactionTransformed()
 
-  Predict.startFlow()
+  //Predict.startFlow()
 
 
 

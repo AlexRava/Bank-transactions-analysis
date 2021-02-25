@@ -1,17 +1,17 @@
 package SinkConnector
 
-import Sources.CassandraSource
 import Utility.LoadTableInCassandra
 import com.datastax.spark.connector.cql.CassandraConnector
-import org.apache.spark.sql.{ForeachWriter, Row}
+import org.apache.spark.sql.{ForeachWriter}
 
-abstract class CassandraSink/*(val source : CassandraSource)*/ extends ForeachWriter[Row]{
+abstract class CassandraSink[T] extends ForeachWriter[T]{
 
-  def query(r: Row/*, source: CassandraSource*/):String //template method
+  def query(r: T):String //template method
 
   override def open(partitionId: Long, epochId: Long): Boolean = true
 
-  override def process(r: Row)= {
+  override def process(r: T)= {
+    //println("HERE")
     //import spark.implicits._
 
     //test di una query vuota
@@ -25,7 +25,7 @@ abstract class CassandraSink/*(val source : CassandraSource)*/ extends ForeachWr
     //val cols = "DeviceOS, Browser, DeviceType, ScreenResolution , DeviceInfo , uid , TransactionAmt , ProductCD , isFraud , card1 , card2 , card3 , card4 , card5 , card6 , region , country , R_emaildomain , P_emaildomain , TransactionDT , TransactionID ,D1"
     // cassandra insert data OK
     //val driver: DbDriver[CassandraConnector] = CassandraDriver// driver.connector
-
+    //print("sss")
     //val query: String = s""" insert into ${CassandraDriver.keySpace}.${CassandraDriver.table} (${cols}) values('${t.DeviceOS}','${t.Browser}','${t.DeviceType}','${t.ScreenResolution}','${t.DeviceInfo}','${t.uid}',${t.TransactionAmt},'${t.ProductCD}',${t.isFraud},'${t.card1}','${t.card2}','${t.card3}','${t.card4}','${t.card5}','${t.card6}','${t.region}','${t.country}','${t.R_emaildomain}','${t.P_emaildomain}','${t.TransactionDT}','${t.TransactionID}','${t.D1}');"""
     val connector = CassandraConnector(LoadTableInCassandra.spark.sparkContext.getConf)
 

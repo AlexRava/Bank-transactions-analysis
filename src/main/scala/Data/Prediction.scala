@@ -14,7 +14,7 @@ object Prediction{
     .add("transactionid", StringType)
     .add("prediction", StringType)
 
-  implicit def listToTransaction(l: List[String]): Prediction = new Prediction(
+  implicit def listToTransaction(l: List[String]): Prediction  = new Prediction(
     l(0),
     l(1),
     l(2)

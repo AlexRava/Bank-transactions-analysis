@@ -1,5 +1,7 @@
 package Data
 
+import Prediction.listToTransaction
+
 object DataFactory {
 
   def createTransaction(l: List[String]): Transaction = l

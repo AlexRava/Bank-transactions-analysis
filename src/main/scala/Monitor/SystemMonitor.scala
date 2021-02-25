@@ -5,7 +5,7 @@ import Sources.KafkaSources.{AllTransactionSource, InputSource, PredictionSource
 
 
 /**
-  * Due to a SystemMonitor, it is possible to choose a particular topic and monitoring it.
+  * Due to a SystemMonitor, it is possible to choose a particular topic source and monitoring it.
   */
 trait SystemMonitor {
 

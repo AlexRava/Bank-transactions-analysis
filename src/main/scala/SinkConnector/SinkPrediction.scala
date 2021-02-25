@@ -1,12 +1,10 @@
 package SinkConnector
 import Data.Prediction
 import Sources.CassandraSource
-import org.apache.spark.sql.Row
 
-class SinkPrediction(val source: CassandraSource) extends CassandraSink {
+class SinkPrediction(val source: CassandraSource) extends CassandraSink[Prediction] {
 
-  def query(r: Row): String = {
-    val p = r.asInstanceOf[Prediction]
-    s""" insert into ${source.namespace}.${source.table} (${source.col}) values('${p.uid}','${p.TransactionID}','${p.prediction}'"""
-  }
+  def query(p: Prediction): String =
+    s""" insert into ${source.namespace}.${source.table} (${source.col}) values('${p.uid}','${p.TransactionID}','${p.prediction}');"""
+
 }

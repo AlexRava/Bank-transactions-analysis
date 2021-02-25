@@ -1,20 +1,11 @@
 package Utility
 
-import java.io.File
-import java.util.Properties
-
-import SinkConnector.{CassandraSink, SinkTransformed}
-import Sources.CassandraSources.{DbHistoricalData, DbPrediction, DbResult, DbTransformed}
-import Utility.LoadTableUtility._
-import com.github.tototoshi.csv.CSVReader
-import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerRecord}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.{DataFrame, SparkSession}
-import org.apache.spark.sql.functions.{struct, to_json}
-import org.apache.spark.sql.streaming.OutputMode
-import org.apache.spark.sql.cassandra._
-
+import java.util.Properties
+import Sources.CassandraSources._
+import LoadTableUtility._
+import org.apache.spark.sql.SparkSession
 
 object LoadTableInCassandra extends App{
 
@@ -42,19 +33,19 @@ object LoadTableInCassandra extends App{
   props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
   props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
 
-  val pathForTransactions = "C:\\Users\\Alex\\Desktop\\Fraud_Historical_data\\test_transformed.csv"
-  readData(pathForTransactions)
-  loadBankTransactions(DbHistoricalData)
+  val pathForTransactions = "C:\\Users\\Alex\\Desktop\\Data_Bank\\historical_data.csv"
+  //loadBankTransactions(DbHistoricalData)
+  //readData(pathForTransactions)
 
 
-  val pathForTransformed = ""
-  readData(pathForTransformed)
-  loadSimulationTransformed(DbTransformed)
+  val pathForTransformed = "C:\\Users\\Alex\\Desktop\\Data_Bank\\incoming_data_transformed.csv"
+  /*loadSimulationTransformed(DbTransformed)
+  readData(pathForTransformed)*/
 
 
-  val pathForPrediction = ""
-  readData(pathForPrediction)
+  val pathForPrediction = "C:\\Users\\Alex\\Desktop\\Data_Bank\\prediction.csv"
   loadSimulationPrediction(DbPrediction)
+  readData(pathForPrediction)
 
   spark.streams.awaitAnyTermination()
 }
