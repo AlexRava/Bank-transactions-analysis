@@ -1,6 +1,7 @@
 package Streams
 
 import App.Application.spark
+import Data.DataFactory
 import Sources.CassandraSources.DbTransformed
 import Sources.KafkaSources.TransactionTransformedSource
 import Sources.{KafkaSource, Source}
@@ -17,7 +18,7 @@ object DataTransformer extends AbstractStreamingFlow with MultipleSources{
 
   var sources: mutable.Map[String,DataFrame] = mutable.HashMap()
   var outputSource: KafkaSource = TransactionTransformedSource
-  var mergeStrategy: mutable.Map[String,DataFrame] => DataFrame = _
+  private var mergeStrategy: mutable.Map[String,DataFrame] => DataFrame = _
 
   override def addSource(source: Source) = sources.put(source.name,source.readFromSource())
 
@@ -37,16 +38,22 @@ object DataTransformer extends AbstractStreamingFlow with MultipleSources{
   //override def readData() = mergeSources(this.dataSources)
 
   override protected def compute() = mergeStrategy(sources)
+    .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+    .as[(String,String)]
+    .map(_._2.split(",").toList)
+    .map(DataFactory.createTransaction(_))
+    .select("*")
     .addColHabitualBehaviour()
-
 
   override protected def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = {
     val retrieveTrasformedDataFromDb =
-      (batchDF: DataFrame, batchId: Long) => batchDF.collect.foreach(
-        user => new RetrieveTransformedTransaction(user.mkString, "ID", DbTransformed, outputSource).startFlow()) // ADD TRANSACTION ID
+      (batchDF: DataFrame, batchId: Long) =>
+        batchDF.collect.foreach( user =>
+          //println(s"id ${user(0)}, trans id ${user(1)}")
+          new RetrieveTransformedTransaction(s"${user(0)}", s"${user(1)}", DbTransformed, outputSource).startFlow())
 
     compute
-      .select($"uid") // ADD TRANSACTION ID
+      .select($"uid",$"TransactionID")
       .writeStream
       .outputMode(OutputMode.Update)
       .foreachBatch(retrieveTrasformedDataFromDb)

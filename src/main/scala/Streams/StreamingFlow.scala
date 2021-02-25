@@ -44,12 +44,15 @@ abstract class AbstractFinishedFlow extends AbstractFlow{
 abstract class AbstractStreamingFlow extends AbstractFlow{
 
   //type pino <: Row
-  type Transaction <: Row
-  
-  protected def writeData[DataStreamWriter[Row]](): org.apache.spark.sql.streaming.DataStreamWriter[Row]
+  //type Transaction <: Row
 
-  override def startFlow() = writeData.start()
+ protected def writeData[DataStreamWriter[Row]](): org.apache.spark.sql.streaming.DataStreamWriter[Row]
+  //protected def writeData[T](): T
+  //override def startFlow() = writeData[streaming.DataStreamWriter[Row]].start()
+  //override startFlow() = writeData().start()
+  //override protected def compute(): DataFrame = ???
 
+  override def startFlow(): Unit = writeData().start()
 }
 /*
 abstract class AbstractMultipleSources extends MultipleSources {

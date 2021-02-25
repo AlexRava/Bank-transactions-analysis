@@ -9,7 +9,6 @@ trait CustomFeature{
 
 trait DefinedFeature extends CustomFeature {
 
-
   def addColHabitualBehaviour():DataFrame
 
   def addColMeanAmountForPeriod():DataFrame
@@ -28,7 +27,6 @@ object DataFrameExtension {
     override def addColHabitualBehaviour(): DataFrame = base
 
     override def addColMeanAmountForPeriod(): DataFrame = base
-
 
   }
 

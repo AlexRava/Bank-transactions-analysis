@@ -9,6 +9,8 @@ import Sources.KafkaSources.{AllTransactionSource, InputSource, PredictionSource
   */
 trait SystemMonitor {
 
+  def printPrediction() = MonitorTopic.fromTopicSource(PredictionSource).prediction()
+
   def monitorTopic(s: KafkaSource) = MonitorTopic.fromTopicSource(s).monitor()
 
   def monitorInput() =  monitorTopic(InputSource)

@@ -39,37 +39,23 @@ object Application extends App {
   //input.startFlow()
 
   InputStream.startFlow()
-  //monitor.monitorInput()
   //monitor.monitorAllTransactions() //InputStream write on AllTransactions Source
 
+  //RegisterTransactions.startFlow()
 
-  RegisterTransactions.startFlow()
-  //val transformer: StreamingFlowWithMultipleSources = new DataTransformer(TransactionTransformedSource)
-  /*DataTransformer.addSource(InputSource)
+
+  DataTransformer.addSource(InputSource)
   DataTransformer.addSource(AllTransactionSource)
-  DataTransformer.setMergeStrategy(_.get(InputSource.name).get) *///transformer with a simple strategy*/
+  DataTransformer.setMergeStrategy(_.get(InputSource.name).get) //transformer with a simple strategy
+
+
   //transformer.setMergeStrategy(MergeStrategy.simpleStrategy(_))
-  //monitor.monitorTransactionTransformed()
+  DataTransformer.startFlow()
+  monitor.monitorTransactionTransformed()
 
-  //Predict.startFlow()
-
-
-
-  //printStream(transformer)
-/*
   Predict.startFlow()
 
-  */
-
-
-
-
-
-
-
-
-
-
+  //monitor.printPrediction()
 
 
 

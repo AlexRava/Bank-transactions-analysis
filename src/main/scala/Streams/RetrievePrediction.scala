@@ -1,29 +1,28 @@
 package Streams
 import App.Application.spark
+import Sources.{KafkaSource, SimulationCassandraSource}
 import org.apache.spark.sql
 import org.apache.spark.sql.functions.{struct, to_json}
 import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.sql.cassandra._
 
-
-class RetrievePrediction(val user: String, val transactionId: String) extends AbstractFinishedFlow {
+class RetrievePrediction(val user: String,
+                         val transactionId: String,
+                         val dBSource: SimulationCassandraSource,
+                         val outputSource: KafkaSource) extends AbstractFinishedFlow {
 
   import spark.implicits._
 
-  def readData(): DataFrame = spark
-    .read
-    .cassandraFormat("prediction", "bank")
-    .load()
-
-  override protected def compute(): DataFrame = readData()
-    .filter("uid = '" + user + "'") // 'where' is computed on Cassandra Server, not in spark ( ?? )
+  override protected def compute(): DataFrame = dBSource.readFromSource()
+    .filter(s"uid == '$user'")
+    .filter(s"transactionid == '$transactionId'")
     .select($"uid" as "key", to_json(struct($"*")) as "value")
 
   override protected def writeData[DataFrameWriter[Row]](): sql.DataFrameWriter[Row] = compute()
     .write
-    .format("kafka")
+    .format(outputSource.sourceType)
     .option("kafka.bootstrap.servers", "localhost:9092")
     .option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
-    .option("topic", "results") // HOW TO PARTITION (?)
+    .option("topic", outputSource.topic)
 
 }

@@ -27,7 +27,8 @@ abstract class CassandraSink[T] extends ForeachWriter[T]{
     //val driver: DbDriver[CassandraConnector] = CassandraDriver// driver.connector
     //print("sss")
     //val query: String = s""" insert into ${CassandraDriver.keySpace}.${CassandraDriver.table} (${cols}) values('${t.DeviceOS}','${t.Browser}','${t.DeviceType}','${t.ScreenResolution}','${t.DeviceInfo}','${t.uid}',${t.TransactionAmt},'${t.ProductCD}',${t.isFraud},'${t.card1}','${t.card2}','${t.card3}','${t.card4}','${t.card5}','${t.card6}','${t.region}','${t.country}','${t.R_emaildomain}','${t.P_emaildomain}','${t.TransactionDT}','${t.TransactionID}','${t.D1}');"""
-    val connector = CassandraConnector(LoadTableInCassandra.spark.sparkContext.getConf)
+    //set the correct spark context
+    val connector = CassandraConnector(App.Application.spark.sparkContext.getConf)
 
     connector.withSessionDo(session => session.execute(query(r)))
 

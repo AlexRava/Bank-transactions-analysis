@@ -14,20 +14,17 @@ class RetrieveTransformedTransaction(val user: String,
 
   import spark.implicits._
 
-  /*override def readData(): DataFrame = spark
-    .read
-    .cassandraFormat(dBSource.table, dBSource.namespace)
-    .load()*/
 
   override protected def compute(): DataFrame = dBSource.readFromSource()
-    .filter("uid = '" + user.mkString + "'") // 'where' is computed on Cassandra Server, not in spark ( ?? )
+    .filter(s"uid == '$user'")
+    .filter(s"TransactionID == '$transactionId'")
     .select($"uid" as "key", to_json(struct($"*")) as "value")
 
   override protected def writeData[DataFrameWriter[Row]](): sql.DataFrameWriter[Row] = compute()
-    .write
-    .format(outputSource.sourceType)
-    .option("kafka.bootstrap.servers", "localhost:9092")
-    .option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
-    .option("topic", outputSource.topic) // HOW TO PARTITION (?)
+  .write
+  .format(outputSource.sourceType)
+  .option("kafka.bootstrap.servers", "localhost:9092")
+  .option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
+  .option("topic", outputSource.topic)
 
 }

@@ -6,6 +6,7 @@ import Sources.CassandraSources.DbHistoricalData
 import Sources.{CassandraSource, KafkaSource}
 import Sources.KafkaSources.InputSource
 import App.Application.spark
+import org.apache.spark.sql.streaming.DataStreamWriter
 import org.apache.spark.sql.{DataFrame, ForeachWriter, Row, streaming}
 
 object RegisterTransactions extends AbstractStreamingFlow {
@@ -19,15 +20,12 @@ object RegisterTransactions extends AbstractStreamingFlow {
     .readFromSource()
     .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
-  override protected def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = {
-
-    compute()
-
+  override protected def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = compute()
     .as[(String,String)]
     .map(_._2.split(",").toList)
     .map(DataFactory.createTransaction(_))
     .writeStream
     .outputMode("update")
-    .foreach((new SinkTransaction(outputSource)))//.asInstanceOf[ForeachWriter[Row]])
-     }
+    .foreach((new SinkTransaction(outputSource)))
+    .asInstanceOf[streaming.DataStreamWriter[Row]]
 }

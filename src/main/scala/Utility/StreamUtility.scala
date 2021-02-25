@@ -1,11 +1,17 @@
 package Utility
 
+import App.Application.spark
 import org.apache.spark.sql.Dataset
 
 object StreamUtility {
 
+  import spark.implicits._
+
+
   def printInStdOut [T](dataset: Dataset[T]) {
     dataset
+      .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+      .as[(String,String)]
       .writeStream
       .outputMode("update")
       .format("console")

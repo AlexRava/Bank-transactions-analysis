@@ -9,7 +9,7 @@ case class Prediction( uid: String = "",
 
 object Prediction{
 
-  def TransactionSchema = new StructType()
+  def PredictionSchema = new StructType()
     .add("uid", StringType)
     .add("transactionid", StringType)
     .add("prediction", StringType)
