@@ -10,9 +10,10 @@ import org.apache.spark.sql.functions.from_json
   * Thank's to this abstraction it's possible to monitor a Topic
   */
 trait MonitorTopic {
-  def monitor()
 
+  def monitor()
   def prediction()
+
 }
 
 /**
@@ -36,7 +37,7 @@ class MonitorTopicImpl(source : KafkaSource) extends MonitorTopic {
     .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
     .as[(String,String)]
     .select($"key",from_json($"value",Prediction.PredictionSchema) as "data")
-    .select($"data.uid" as "user",$"data.TransactionID",$"data.prediction" as "Prediction 0:Ok - 1:Fraud")
+    .select($"data.uid" as "user",$"data.TransactionID",$"data.prediction" as "Prediction ( 0 - 1 ) : Ok - Fraud")
     .writeStream
     .outputMode("update")
     .format("console")

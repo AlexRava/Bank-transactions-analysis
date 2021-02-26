@@ -3,6 +3,9 @@ package Data
 import org.apache.spark.sql.types.StringType
 import Transaction.TransactionSchema
 
+/**
+  * A transformed transaction type, it represent a specific transaction after the feature engineering phase
+  */
 case class TransactionTransformed(
                                    DeviceOS: String = "",
                                    Browser: String = "",
@@ -10,31 +13,27 @@ case class TransactionTransformed(
                                    ScreenResolution: String = "",
                                    DeviceInfo: String = "",
                                    uid: String = "",
-                                   TransactionAmt: String = "",//Double = 0,
-                                   //ProductCD: String = "",
-                                   isFraud: String = "",//Int = 0,
-                                   //card1: String = "",
+                                   TransactionAmt: String = "",
+                                   isFraud: String = "",
                                    card2: String = "",
                                    card3: String = "",
                                    card4: String = "",
                                    card5: String = "",
                                    card6: String = "",
-                                   //region: String = "",
                                    country: String = "",
                                    R_emaildomain: String = "",
                                    P_emaildomain: String = "",
                                    TransactionDT: String = "",
                                    TransactionID: String = "",
-                                   //D1: String = "",
-                                   N_Trans_Last_month_TransactionAmt_less_35 : String = "",//Int = 0,
-                                   N_Trans_Last_month_35_less_TransactionAmt_greater_80: String = "",//Int = 0,
-                                   N_Trans_Last_month_TransactionAmt_greater_80: String = "",//Int = 0,
-                                   N_Trans_Last_month :String = "",//Int = 0,
+                                   N_Trans_Last_month_TransactionAmt_less_35 : String = "",
+                                   N_Trans_Last_month_35_less_TransactionAmt_greater_80: String = "",
+                                   N_Trans_Last_month_TransactionAmt_greater_80: String = "",
+                                   N_Trans_Last_month :String = "",
                                    IS_TransactionAmt_over_than_perc_of_the_mean_wrt_lastmonth :String = "",
-                                   N_Trans_Last_week_TransactionAmt_less :String = "",//Int = 0,
-                                   N_Trans_Last_week_35_less_TransactionAmt_greater_80 :String = "",//Int = 0,
-                                   N_Trans_Last_week_TransactionAmt_greater_80 :String = "",//Int = 0,
-                                   N_Trans_Last_week :String = "",//Int = 0,
+                                   N_Trans_Last_week_TransactionAmt_less :String = "",
+                                   N_Trans_Last_week_35_less_TransactionAmt_greater_80 :String = "",
+                                   N_Trans_Last_week_TransactionAmt_greater_80 :String = "",
+                                   N_Trans_Last_week :String = "",
                                    IS_TransactionAmt_over_than_perc_of_the_mean_wrt_lastweek :String = "",
                                    IS_DeviceOS_habitual :String = "",
                                    IS_Browser_habitual :String = "",
@@ -48,7 +47,15 @@ case class TransactionTransformed(
                                    IS_card6_habitual :String = "",
                                  )
 
+/**
+  * Utility for a Transformed transactions data type
+  */
 object TransactionTransformed{
+
+  /**
+    * A schema of a transformed Transaction ( related to json stuff )
+    * @return the schema of a transformed transaction
+    */
   def TransactionTransformedSchema = TransactionSchema
     .add("n_trans_last_month_transactionamt_less_35",StringType)
     .add("n_trans_last_month_35_less_transactionamt_greater_80" ,StringType)
@@ -71,6 +78,11 @@ object TransactionTransformed{
     .add("is_card4_habitual" ,StringType)
     .add("is_card6_habitual" ,StringType)
 
+  /**
+    * An implicit factory for a transformed transaction
+    * @param l a list of all the field of a transformed transaction
+    * @return a new transformed transaction
+    */
   implicit def listToTransactionTransformed(l:List[String]):TransactionTransformed = new TransactionTransformed(
     l(0),
     l(1),
@@ -78,9 +90,9 @@ object TransactionTransformed{
     l(3),
     l(4),
     l(5),
-    l(6),//.toDouble,
+    l(6),
     l(7),
-    l(8),//.toInt,
+    l(8),
     l(9),
     l(10),
     l(11),
@@ -94,24 +106,20 @@ object TransactionTransformed{
     l(19),
     l(20),
     l(21),
-    l(22),//.toDouble.toInt,
-    l(23),//.toDouble.toInt,
-    l(24),//.toDouble.toInt,
-    l(25),//.toDouble.toInt,
+    l(22),
+    l(23),
+    l(24),
+    l(25),
     l(27),
-    l(28),//.toDouble.toInt,
-    l(29),//.toDouble.toInt,
-    l(30),//.toDouble.toInt,
-    l(31),//.toDouble.toInt,
+    l(28),
+    l(29),
+    l(30),
+    l(31),
     l(32),
     l(33),
     l(34),
     l(35),
     l(35),
     l(37)
-    /*l(38),
-    l(39),
-    l(40),
-    l(41),*/
   )
 }

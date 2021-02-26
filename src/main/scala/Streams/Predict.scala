@@ -16,14 +16,6 @@ object Predict extends AbstractStreamingFlow {
   import spark.implicits._
   import Utility.DataFrameExtension._
 
-  /*override def readData(): DataFrame = spark
-    .readStream
-    .format("kafka")
-    .option("kafka.bootstrap.servers", "localhost:9092")
-    .option("subscribe", "transaction-transformed")
-    .load()
-*/
-
   override protected def compute(): DataFrame =  TransactionTransformedSource
     .readFromSource()
     .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")

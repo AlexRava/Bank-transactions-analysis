@@ -33,72 +33,17 @@ object Application extends App {
     .config(conf)
     .getOrCreate()
 
-  var monitor = SystemMonitor
-
-  //var input = new InputStream(InputSource, AllTransactionSource) //fare una factory settando le source
-  //input.startFlow()
-
-  InputStream.startFlow()
-  //monitor.monitorAllTransactions() //InputStream write on AllTransactions Source
-
-  //RegisterTransactions.startFlow()
-
-
   DataTransformer.addSource(InputSource)
   DataTransformer.addSource(AllTransactionSource)
   DataTransformer.setMergeStrategy(_.get(InputSource.name).get) //transformer with a simple strategy
+  //DataTransformer.setMergeStrategy(MergeStrategy.simpleStrategy(_))
 
-
-  //transformer.setMergeStrategy(MergeStrategy.simpleStrategy(_))
+  InputStream.startFlow()
+  RegisterTransactions.startFlow()
   DataTransformer.startFlow()
-  monitor.monitorTransactionTransformed()
-
   Predict.startFlow()
 
-  //monitor.printPrediction()
-
-
-
-
-
-
-
-
-  //transformer.addSource()
-  //val model: Model = new Model()
-  /*val t = transformer.compute()
-  val transformed_transaction = TransformedStream.write()
-  transformed_transaction.writeStream.foreachBatch( (batchDF: DataFrame, batchId:Long) => {
-    batchDF.foreach(row => println(row))
-  }).start()
-
-  //printStream(transformed_transaction)
-
-  /*val res = spark
-    .readStream
-    .format("kafka")
-    .option("kafka.bootstrap.servers", "localhost:9092")
-    .option("subscribe", "results")
-    .load()
-  printStream(res)*/
-
-
-  // And load it back in during production
-  /*val pathOneHotModel = "/tmp/spark-logistic-regression-model"
-  val oneHotModel = PipelineModel.load(pathOneHotModel)
-  val encoder = new OneHotEncoder()*/
-  /*val encoder = new OneHotEncoder()
-    .setInputCol("categoryIndex")
-    .setOutputCol("categoryVec")
-
-  val encoded = encoder.transform(indexed)
-  encoded.select("id", "categoryVec").show()
-  // $example off$
-  sc.stop()*/
-*/
-
-  //printStream(TransformedStream)
-  //printStream(t)
+  SystemMonitor.printPrediction()
 
   spark.streams.awaitAnyTermination()
 }

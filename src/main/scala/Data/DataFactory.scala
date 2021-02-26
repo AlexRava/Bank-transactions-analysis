@@ -2,6 +2,9 @@ package Data
 
 import Prediction.listToTransaction
 
+/**
+  * A factory for the data object that are involved in this domain
+  */
 object DataFactory {
 
   def createTransaction(l: List[String]): Transaction = l
