@@ -27,7 +27,7 @@ object LoadTableUtility {
   def readData(path : String)= {
     val producer: Producer[String, String] = new KafkaProducer(props)
     val reader = CSVReader.open(new File(path))
-    reader.foreach(transaction => producer.send(new ProducerRecord[String,String](TOPIC_NAME, transaction.mkString(","))) )
+    reader.foreach(transaction => { Thread.sleep(400); producer.send(new ProducerRecord[String,String](TOPIC_NAME, transaction.mkString(",")));})
   }
 
   def loadBankTransactions(source : CassandraSource) = readKafkaTopic()

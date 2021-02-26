@@ -34,8 +34,8 @@ object LoadTableInCassandra extends App{
   props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
 
   val pathForTransactions = "C:\\Users\\Alex\\Desktop\\Data_Bank\\historical_data.csv"
-  //loadBankTransactions(DbHistoricalData)
-  //readData(pathForTransactions)
+  /*loadBankTransactions(DbHistoricalData)
+  readData(pathForTransactions)*/
 
 
   val pathForTransformed = "C:\\Users\\Alex\\Desktop\\Data_Bank\\incoming_data_transformed.csv"
@@ -44,8 +44,8 @@ object LoadTableInCassandra extends App{
 
 
   val pathForPrediction = "C:\\Users\\Alex\\Desktop\\Data_Bank\\prediction.csv"
-  loadSimulationPrediction(DbPrediction)
-  readData(pathForPrediction)
+  /*loadSimulationPrediction(DbPrediction)
+  readData(pathForPrediction)*/
 
   spark.streams.awaitAnyTermination()
 }

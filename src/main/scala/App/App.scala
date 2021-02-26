@@ -39,7 +39,7 @@ object Application extends App {
 
   //Thread.sleep(1000)
   SystemMonitor.printPrediction()
-
+  //SystemMonitor.monitorTransactionTransformed()
   spark.streams.awaitAnyTermination()
 }
 

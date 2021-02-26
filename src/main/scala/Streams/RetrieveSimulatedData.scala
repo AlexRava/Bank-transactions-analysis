@@ -14,7 +14,7 @@ class RetrieveSimulatedData(val user: String,
   import spark.implicits._
 
   override protected def compute(): DataFrame = dBSource.readFromSource()
-    .filter(s"uid == '$user'")
+    .filter(s"uid == '$user'")// AND TransactionID == '$transactionId'")
     .filter(s"TransactionID == '$transactionId'")
     .select($"uid" as "key", to_json(struct($"*")) as "value")
 
