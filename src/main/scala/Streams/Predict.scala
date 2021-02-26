@@ -22,13 +22,12 @@ object Predict extends AbstractStreamingFlow {
     .as[(String,String)]
     .select($"key",from_json($"value",TransactionTransformed.TransactionTransformedSchema) as "data")
     .select($"data.uid",$"data.TransactionID")
-    //.select("*")
     .addPrediction()
 
 
   override protected def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = {
     val retrievePrediction = (batchDF: DataFrame, batchId: Long) =>
-      batchDF.collect.foreach(user => new RetrievePrediction(s"${user(0)}", s"${user(1)}", DbPrediction, outputSource).startFlow())
+      batchDF.collect.foreach(user => new RetrieveSimulatedData(s"${user(0)}", s"${user(1)}", DbPrediction, outputSource).startFlow())
 
     compute
       .writeStream

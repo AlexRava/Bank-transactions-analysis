@@ -1,17 +1,13 @@
 package Streams
 
 import App.Application.spark
-import org.apache.spark.sql.{DataFrame, Dataset, Row, streaming}
-import Data.{DataFactory}
+import org.apache.spark.sql.{DataFrame, Row, streaming}
+import Data.DataFactory
 import Sources.CassandraSources.DbHistoricalData
 import Sources.KafkaSources.{AllTransactionSource, InputSource}
-import Sources.{CassandraSource, KafkaSource, Source}
-import org.apache.spark.sql.functions.{struct, to_json}
-import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode}
-import org.apache.spark.sql.cassandra._
+import Sources.KafkaSource
+import org.apache.spark.sql.streaming.OutputMode
 
-
-//class InputStream(var inputSource: KafkaSource, var outputSource: KafkaSource) extends StreamingFlow {
 object InputStream extends AbstractStreamingFlow {
 
   val inputSource: KafkaSource = InputSource
@@ -19,31 +15,18 @@ object InputStream extends AbstractStreamingFlow {
 
   import spark.implicits._
 
-  //override def setInputSource(streamSource: Source) = this.inputSource = streamSource
-  //override def setOutputSource(streamSource: Source) = this.outputSource = streamSource
-  //override def readData() = spark
-    /*.readStream
-    .format(inputSource.sourceType)
-    .option("kafka.bootstrap.servers", "localhost:9092")
-    .option("subscribe", inputSource.topic)
-    .load()*/
-
   override protected def compute() =
     inputSource.readFromSource()
     .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
     .as[(String,String)]
     .map(_._2.split(",").toList)
-    //.map(_.asInstanceOf[TransactionSerialized]) //non funziona perche lo split da in output una lista e non una tupla
     .map(DataFactory.createTransaction(_))
-    //.select($"*")
     .select($"uid")
 
   override protected def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = {
-  //override def writeData[writer](): writer = {
-
       val retrieveDataforEachUsersInBatch =
       (batchDF: DataFrame, batchId:Long) => batchDF.collect.foreach(
-          userInARow => new RetrieveAndWriteAllTransactionsOf(userInARow.mkString, DbHistoricalData , outputSource).startFlow()
+          userInARow => new RetrieveAllTransactionsOf(userInARow.mkString, DbHistoricalData , outputSource).startFlow()
       )
 
     compute()
@@ -51,45 +34,4 @@ object InputStream extends AbstractStreamingFlow {
       .outputMode(OutputMode.Update)
       .foreachBatch(retrieveDataforEachUsersInBatch)
   }
-
-
-  /*private val retrieveDataforEachUsersInBatch =
-    (batchDF: DataFrame, batchId:Long) => batchDF.collect.foreach(userInARow => new RetrieveAndWriteAllTransactionsOf(userInARow.mkString, outputSource).startFlow())
-  */
-
-  /*.read
-.cassandraFormat("transactions1","bank")
-.load()
-.filter("uid = '" + user.mkString + "'")// 'where' is computed on Cassandra Server, not in spark ( ?? )
-.select($"uid" as "key" , to_json(struct($"*")) as "value")
-//.foreach(row => println(row))
-//.show()
-.write
-.format("kafka")
-.option("kafka.bootstrap.servers", "localhost:9092")
-.option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
-.option("topic", "allTransactions") // HOW TO PARTITION (?)
-.save()*/
-
-  //.map(_.uid)
-  //.filter(t => (t.TransactionID != "") & (t.uid != ""))
-  //.map(_.uid)
-  //.toDF()
-
-  //def transactions = transaction
-
-  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //stream that publish the transactions on the topic where will be computed the feature engineering phase
-  /*val loadTransaction = transaction
-    .select($"uid", to_json(struct($"*")))
-    .toDF("key", "value")
-    .write
-    .format("kafka")
-    .option("kafka.bootstrap.servers", "localhost:9092")
-    .option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
-    .option("topic", "allTransactions")
-    .save()*/
-
-  //send all transactions to the feature eng topic
-
 }

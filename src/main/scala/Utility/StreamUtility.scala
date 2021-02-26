@@ -26,12 +26,4 @@ object StreamUtility {
     .start()
   writeQueryCassandra.awaitTermination()*/
 
-  //PRINT in std out
-  /*val  printUid = transactions
-    .writeStream
-    .outputMode("update")
-    .format("console")
-    .start()
-  printUid.awaitTermination()*/
-
 }

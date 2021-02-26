@@ -20,6 +20,7 @@ trait Source extends Serializable {
 trait KafkaSource extends Source{
 
   def topic:String
+  def server: String = "localhost:9092"
 
   override def sourceType: String = "kafka"
   override def name = topic

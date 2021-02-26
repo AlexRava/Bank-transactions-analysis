@@ -20,7 +20,9 @@ trait MonitorTopic {
   * Factory for a Monitoring topic.
   */
 object MonitorTopic{
+
   def fromTopicSource(s:KafkaSource): MonitorTopicImpl = new MonitorTopicImpl(s)
+
 }
 
 /**

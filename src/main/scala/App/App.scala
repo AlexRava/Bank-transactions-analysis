@@ -1,19 +1,13 @@
 package App
 
 import Monitor.SystemMonitor
-import Sources.KafkaSources.{AllTransactionSource, InputSource, TransactionTransformedSource}
+import Sources.KafkaSources.{AllTransactionSource, InputSource}
 import Streams.{DataTransformer, InputStream, Predict, RegisterTransactions}
 import Utility.{MergeStrategy, StreamUtility}
-import org.apache.spark.sql.functions.{col, from_json, struct, to_json}
-import org.apache.spark.sql.cassandra._
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
-import org.apache.spark.ml.PipelineModel
-import org.apache.spark.ml.feature.OneHotEncoder
-import org.apache.spark.sql.expressions.Window
-import org.apache.spark.sql.{DataFrame, Row, SparkSession}
-import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode}
-import org.apache.spark.sql.functions._
+import org.apache.spark.sql.{DataFrame, SparkSession}
+
 
 object Application extends App {
 
