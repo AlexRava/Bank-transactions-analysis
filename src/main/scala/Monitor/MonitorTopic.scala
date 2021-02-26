@@ -35,14 +35,18 @@ class MonitorTopicImpl(source : KafkaSource) extends MonitorTopic {
 
   override def monitor() = StreamUtility.printInStdOut(source.readFromSource())
 
-  override def prediction() = source.readFromSource()
-    .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
-    .as[(String,String)]
-    .select($"key",from_json($"value",Prediction.PredictionSchema) as "data")
-    .select($"data.uid" as "user",$"data.TransactionID",$"data.prediction" as "Prediction ( 0 - 1 ) : Ok - Fraud")
-    .writeStream
-    .outputMode("update")
-    .format("console")
-    .start()
+  override def prediction() = {
+    println("hehehe")
+    source.readFromSource()
+      .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+      .as[(String, String)]
+      .select($"key", from_json($"value", Prediction.PredictionSchema) as "data")
+      .select($"data.uid" as "user", $"data.TransactionID", $"data.prediction" as "Prediction ( 0 - 1 ) : Ok - Fraud")
+      .writeStream
+      .outputMode("update")
+      .format("console")
+      .start()
+
+  }
 
 }

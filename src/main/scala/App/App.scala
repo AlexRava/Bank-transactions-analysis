@@ -37,6 +37,7 @@ object Application extends App {
   DataTransformer.startFlow()
   Predict.startFlow()
 
+  //Thread.sleep(1000)
   SystemMonitor.printPrediction()
 
   spark.streams.awaitAnyTermination()
