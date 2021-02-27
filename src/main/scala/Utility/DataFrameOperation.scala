@@ -11,7 +11,7 @@ trait DefinedFeature extends CustomFeature {
 
   def addColHabitualBehaviour():DataFrame
 
-  def addColMeanAmountForPeriod():DataFrame
+  def addColIsHabitualBrowser():DataFrame
 }
 
 trait Prediction{
@@ -26,7 +26,7 @@ object DataFrameExtension {
 
     override def addColHabitualBehaviour(): DataFrame = base
 
-    override def addColMeanAmountForPeriod(): DataFrame = base
+    override def addColIsHabitualBrowser(): DataFrame = base
 
   }
 
