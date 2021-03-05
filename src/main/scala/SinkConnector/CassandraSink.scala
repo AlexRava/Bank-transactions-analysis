@@ -11,7 +11,7 @@ abstract class CassandraSink[T] extends ForeachWriter[T]{
   override def open(partitionId: Long, epochId: Long): Boolean = true
 
   override def process(r: T)= {
-    val connector = CassandraConnector(App.Application./*LoadTableInCassandra.*/spark.sparkContext.getConf)
+    val connector = CassandraConnector(App.Application.spark.sparkContext.getConf)
     connector.withSessionDo(session => session.execute(query(r)))
   }
 

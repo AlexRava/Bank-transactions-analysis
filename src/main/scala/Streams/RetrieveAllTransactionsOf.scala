@@ -20,7 +20,6 @@ class RetrieveAllTransactionsOf(val user: String, val dBSource: BankCassandraSou
     .write
     .format(outputSource.sourceType)
     .option("kafka.bootstrap.servers", outputSource.server)
-    //.option("checkpointLocation", "C:\\Users\\Alex\\Desktop\\option")
     .option("topic", outputSource.topic)
   }
 
