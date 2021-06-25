@@ -14,7 +14,7 @@ object DataTransformer extends AbstractStreamingFlow with MultipleSources{
   import Utility.DataFrameExtension.ImplicitsDataFrameCustomOperation
   import spark.implicits._
 
-  var sources: mutable.Map[String,DataFrame] = mutable.HashMap()
+  val sources: mutable.Map[String,DataFrame] = mutable.HashMap()
   val outputSource: KafkaSource = TransactionTransformedSource
   private var mergeStrategy: mutable.Map[String,DataFrame] => DataFrame = _
 
@@ -22,13 +22,16 @@ object DataTransformer extends AbstractStreamingFlow with MultipleSources{
 
   override def setMergeStrategy(strategy: (mutable.Map[String,DataFrame] => DataFrame) ) = mergeStrategy = strategy
 
-  override protected def compute() = mergeStrategy(sources)
+  override protected def compute() =
+     mergeStrategy(sources)
     .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
     .as[(String,String)]
     .map(_._2.split(",").toList)
     .map(DataFactory.createTransaction(_))
     .select("*")
-    .addColHabitualBehaviour()
+      .addColHabitualBehaviour()
+
+
 
   override protected def writeData[DataStreamWriter[Row]](): streaming.DataStreamWriter[Row] = {
     val retrieveTrasformedDataFromDb =
